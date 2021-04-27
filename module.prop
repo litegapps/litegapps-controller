@@ -1,0 +1,10 @@
+id=litegapps-controller
+name=LiteGapps Controller
+version=v0.4
+versionCode=3
+minsdk=27
+date=28-04-2021
+device=All
+author=wahyu6070
+description=Litegapps Controller is additional features of litegapps and litegapps++
+typeinstall=auto
