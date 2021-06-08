@@ -36,8 +36,6 @@ The user self is responsible for obtaining the proper licenses for the APKs, e.g
 To use Google's applications you accept to Google's license agreement and further distribution of Google's application
 are subject of Google's terms and conditions, these can be found at http://www.google.com/policies/
 
-AROMA-Installer is subject to the Apache License 2.0, its license can be found at https://github.com/amarullz/AROMA-Installer/blob/master/README
-
 BusyBox is subject to the GPLv2, its license can be found at https://www.busybox.net/license.html
 
 GNU Tar is subject to the GPLv3+, its license can be found at https://www.gnu.org/licenses/gpl.html
