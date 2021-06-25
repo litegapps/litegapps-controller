@@ -54,7 +54,7 @@ x86_64) ARCH=x86_64 ;;
 *) abort " <$findarch> Your Architecture Not Support" ;;
 esac
 
-base=/data/litegapps
+base=/data/media/0/Android/litegapps/litegapps_controller
 BASE=$base
 BIN=$BASE/bin
 #system
@@ -185,15 +185,15 @@ if [ "$modeselect" = "install" ]; then
 	clear
 	printmid "${C}Install packages${G}"
 	print
-	[ -d $base2/download ] && rm -rf $base2/download
-	test ! -d $base2/download && mkdir -p $base2/download
+	[ -d $BASE/download ] && rm -rf $BASE/download
+	test ! -d $BASE/download && mkdir -p $BASE/download
 	print "- Download package"
 	#DEV_MODE
-	$BIN/curl -L -o $base2/download/$name.zip $url
+	$BIN/curl -L -o $BASE/download/$name.zip $url
 	
 	if [ $? -eq 0 ]; then
 		print "${WHITE}- Downloading status : ${G}[OK]${WHITE}"
-		install_package $base2/download/$name.zip
+		install_package $BASE/download/$name.zip
 		rm -rf $base/download
 	else
     	print "${R} !!! Downloading Package Failed !!!"

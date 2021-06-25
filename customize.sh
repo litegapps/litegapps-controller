@@ -37,11 +37,14 @@ printlog "| Sdk             : $SDKTARGET"
 printlog "| Seamless        : $device_abpartition"
 printlog "|___________________________________"
 printlog " "
-[ -d /data/litegapps ] && rm -rf /data/litegapps
+if [ -f /data/adb/magisk/magiskboot ]; then
+	cp -pf /data/adb/magisk/magiskboot $MODPATH/system/bin/
+fi
+BASED6=/data/media/0/Android/litegapps/litegapps_controller
+[ -d $BASED6 ] && rm -rf $BASED6
 print "- Installing litegapps controller files"
-[ -d /data/litegapps ] && rm -rf /data/litegapps
-cp -af $MODPATH/litegapps /data/
-chmod -R 755 /data/litegapps
+cp -af $MODPATH/litegapps_controller /data/media/0/Android/litegapps/
+chmod -R 755 $BASED6
 if [ -d /data/data/com.termux/files/usr/bin ]; then
 printlog "- Termux Detected"
 printlog "- Installing Binary in termux"
