@@ -94,6 +94,8 @@ black_func(){
 		com.tencent.ig
 		com.supercell.clashofclans
 		com.neptune.domino
+		com.garena.game.codm
+		com.chess
 		"
 		for WAHYU2345 in $LIST_GAME_WAHYU4545; do
 			echo "$WAHYU2345" >> $BLACK_LIST_GAMING_2
