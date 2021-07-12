@@ -228,7 +228,7 @@ gaming2(){
 	printmid "${CYAN}Gaming Mode 2${NC}$WHITE"
 	print " ";
 	del $DATA/gaming2_list_apps
-		for z in $(pm list packages -3); do
+		for z in $(pm list packages -3) $system_list; do
 			boost6071=`getp1 $z`
 			 if black_func $boost6071; then
 			 	  print "${YELLOW}[SKIP] •> ${WHITE}${boost6071//com.}"
@@ -369,7 +369,7 @@ gaming(){
 	printmid "${CYAN}Gaming Mode About${GREEN}"
 	print
 	print "${YELLOW}1.Gaming Mode 1 $GREEN"
-	print "   • Setiap 60 detik aplikasi yang di install di perangkat anda akan di paksa berhenti.untuk menambahkan blacklist app,tambahkan disini : ${WHITE}<$DATA/black_list_gaming2>${GREEN}"
+	print "   • Every 60 seconds application installed on your device will be forced to stop.to add a blacklist app, add it here : ${WHITE}<$DATA/black_list_gaming2>${GREEN}"
 	print "${YELLOW}#.Blacklist Gaming Mode 1"
 	for WAHYU6767 in $blacklist_apps $blacklist_system $blacklist_term $(cat $DATA/black_list_gaming2); do
 		print "${CYAN}  • $WAHYU6767"
@@ -385,7 +385,7 @@ gaming(){
     done
 	print
 	print "${YELLOW}2.Gaming Mode 2 $GREEN"
-	print "   • Aplikasi Yang terinstall di perangkat anda akan di nonaktifkan.untuk menambahkan blacklist app,tambahkan disini : ${WHITE}<$DATA/black_list_gaming2>${GREEN}"
+	print "   •  Applications installed on your device will be disabled. To add a blacklist app, add it here : ${WHITE}<$DATA/black_list_gaming2>${GREEN}"
 	print "${YELLOW}#.Blacklist Gaming Mode 2"
 	for WAHYU6767 in $blacklist_apps $blacklist_system $blacklist_term $(cat $DATA/black_list_gaming2); do
 		print "${CYAN}  • $WAHYU6767"
@@ -401,7 +401,7 @@ gaming(){
     done
     print
     print "${YELLOW}3.Gaming Mode 3 $GREEN"
-	print "   • Aplikasi Yang terdaftar list ${WHITE}<$DATA/gaming_mode_3_list>${GREEN} akan di nonaktifkan."
+	print "   • Listed Applications list ${WHITE}<$DATA/gaming_mode_3_list>${GREEN} will be deactivated."
 	print "${YELLOW}#.List Gaming Mode 3"
     if [ -f $DATA/gaming_mode_3_list ]; then
     	for WAHYU90 in $(cat $DATA/gaming_mode_3_list); do
