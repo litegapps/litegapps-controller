@@ -559,7 +559,8 @@ addon(){
 			magiskboot repack $block 2>/dev/null
 			cd /
 			sleep 1s
-			print "- Unpackimg Done"sleep 3s
+			print "- Unpackimg Done"
+			sleep 7s
 		else
 			print
 			print "- Magiskboot or Boot.img Not found"
