@@ -1,8 +1,10 @@
 #litegapps controller
-#29-12-2020 - 08-06-2021
-updaterversion=0,4
-updatercode=4
-based=/data/litegapps
+#by wahyu6070
+#License GPL3+
+#29-12-2020 - 15-06-2021
+updaterversion=0,5
+updatercode=5
+based=/data/media/0/Android/litegapps/litegapps_controller
 bins=$based/bin
 
 getp(){
@@ -21,12 +23,13 @@ BGBL='\e[1;30;47m'	# Background W Text Bl
 N='\e[0m'			# How to use (example): echo "${G}example${N}"
 
 clear
-printmid "${C}Litegapps Menu Updater${G}"
+printmid "${Y}Litegapps Menu Updater${G}"
 print
 print "${V}- Checking Litegapps Menu${G}"
 test ! -d $based/download && mkdir -p $based/download
-$bins/curl -L -o $based/download/litegapps_menu https://raw.githubusercontent.com/litegapps/litegapps-controller/main/litegapps/litegapps_menu.sh 2>/dev/null
-if [ $(getp litegapps_menu_code $based/download/litegapps_menu) -gt $(getp litegapps_menu_code $based/litegapps_menu.sh) ]; then
+$bins/curl -L -o $based/download/litegapps_menu https://raw.githubusercontent.com/litegapps/litegapps-controller/main/litegapps_controller/updater.sh #2>/dev/null
+echo "$?"
+if [ "$(getp litegapps_menu_code $based/download/litegapps_menu)" -gt "$(getp litegapps_menu_code $based/litegapps_menu.sh)" ]; then
 print " "
 print "  Litegapps Menu Latest version is available ! : "
 print "  Old Version : $(getp litegapps_menu_version $based/litegapps_menu.sh)"
@@ -37,16 +40,15 @@ cp -pf $based/download/litegapps_menu $based/litegapps_menu.sh
 print "- Set permissions"
 chmod 755 $based/litegapps_menu.sh
 print "- update successful"
-elif [ $(getp litegapps_menu_code $based/download/litegapps_menu) -eq $(getp litegapps_menu_code $based/litegapps_menu.sh) ]; then
-print "  Litegapps Menu version is up to date !"
-print "  Litegapps Menu Version : $(getp litegapps_menu_version $based/litegapps_menu.sh)"
+elif [ "$(getp litegapps_menu_code $based/download/litegapps_menu)" -eq "$(getp litegapps_menu_code $based/litegapps_menu.sh)" ]; then
+print "  Litegapps Menu is up to date !"
+print "  Version : $(getp litegapps_menu_version $based/litegapps_menu.sh)"
 fi
 #del $based/download/litegapps_menu
 
-
 print "${Y}- Checking Updater${G}"
 $bins/curl -L -o $based/download/updater https://raw.githubusercontent.com/litegapps/litegapps-controller/main/litegapps/updater.sh 2>/dev/null
-if [ $(getp updatercode $based/download/updater) -gt $(getp updatercode $based/updater.sh) ]; then
+if [ "$(getp updatercode $based/download/updater)" -gt "$(getp updatercode $based/updater.sh)" ]; then
 print
 print "  Updater Latest version is available ! : "
 print "  Old Version : $(getp updaterversion $based/updater.sh)"
@@ -58,9 +60,9 @@ print "- Set permissions"
 chmod 755 $based/updater.sh
 print "- Update successful"
 
-elif [ $(getp updatercode $based/download/updater) -eq $(getp updatercode $based/updater.sh) ]; then
-print "  Updater version is up to date !"
-print "  Updater Version : $(getp updaterversion $based/updater.sh)"
+elif [ "$(getp updatercode $based/download/updater)" -eq "$(getp updatercode $based/updater.sh)" ]; then
+print "  Updater is up to date !"
+print "  Version : $(getp updaterversion $based/updater.sh)"
 fi
 del $based/download/updater
 

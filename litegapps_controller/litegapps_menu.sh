@@ -4,8 +4,8 @@
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #29-12-2020 08-06-2021
-litegapps_menu_version=1.4
-litegapps_menu_code=4
+litegapps_menu_version=1.5
+litegapps_menu_code=5
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #base func
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -382,10 +382,10 @@ menu_about(){
 	print " "
 	print
 	printmid "${Y}Download Package${WHITE}"
-	print " "
+	print " Litegapps package that you can download and install"
 	print " "
 	printmid "${Y}Tweaks${G}"
-	print ""
+	print " Additional features that you can activate"
 	print " "
 	printmid "${Y}Install ZIP Packages${WHITE}"
 	print " You can install even more than one zip package!  offline.  put package.zip into /sdcard/Android/litegapps/package"
@@ -428,8 +428,8 @@ read menu77
 		menu_settings
 		;;
 		5)
-		chmod 755 /data/litegapps/updater.sh
-		. /data/litegapps/updater.sh
+		chmod 755 $BASE/updater.sh
+		. /$BASE/updater.sh
 		;;
 		6)
 		menu_about

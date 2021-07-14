@@ -3,10 +3,10 @@
 #Litegapps controller
 #by wahyu6070
 #
-#. /tmp/backuptool.functions
+. /tmp/backuptool.functions
 log=/data/media/0/Android/litegapps/28-litegapps-controller.log
 loglive=log=/data/media/0/Android/litegapps/28-litegapps-controller-live.log
-base=/data/litegapps
+base=/data/media/0/Android/litegapps/litegapps_controller
 
 [ ! -d $(dirname $log) ] && mkdir -p $(dirname $log)
 

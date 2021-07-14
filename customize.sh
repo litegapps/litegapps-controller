@@ -45,6 +45,12 @@ BASED6=/data/media/0/Android/litegapps/litegapps_controller
 print "- Installing litegapps controller files"
 cp -af $MODPATH/litegapps_controller /data/media/0/Android/litegapps/
 chmod -R 755 $BASED6
+if [ -f /data/adb/magisk/magiskboot ]; then
+print "- Magiskboot detected"
+print "- Installing magiskboot"
+cp -pf /data/adb/magisk/magiskboot $MODPATH/system/bin/magiskboot
+chmod 755 $MODPATH/system/bin/magiskboot
+fi
 if [ -d /data/data/com.termux/files/usr/bin ]; then
 printlog "- Termux Detected"
 printlog "- Installing Binary in termux"

@@ -736,10 +736,10 @@ case $pilih in
 3) menu battery "Battery Saver" ;;
 4) menu testping "Test Ping" ;;
 5)
-	if [ -f /data/litegapps/litegapps_menu.sh ]; then
-		. /data/litegapps/litegapps_menu.sh 
+	if [ -f /data/media/0/Android/litegapps/litegapps_controller/litegapps_menu.sh ]; then
+		. /data/media/0/Android/litegapps/litegapps_controller/litegapps_menu.sh
 	else
-		error "Please Install Litegapps Controller !"
+		error "Please Install Litegapps Controller full version !"
 		sleep 5s
 	fi
 ;;
