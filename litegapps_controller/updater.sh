@@ -1,7 +1,7 @@
 #litegapps controller
 #by wahyu6070
 #License GPL3+
-#29-12-2020 - 15-06-2021
+#29-12-2020 - 14-07-2021
 updaterversion=0,5
 updatercode=5
 based=/data/media/0/Android/litegapps/litegapps_controller
@@ -25,10 +25,14 @@ N='\e[0m'			# How to use (example): echo "${G}example${N}"
 clear
 printmid "${Y}Litegapps Menu Updater${G}"
 print
-print "${V}- Checking Litegapps Menu${G}"
+print "${Y}- Checking Litegapps Menu${G}"
 test ! -d $based/download && mkdir -p $based/download
-$bins/curl -L -o $based/download/litegapps_menu https://raw.githubusercontent.com/litegapps/litegapps-controller/main/litegapps_controller/updater.sh #2>/dev/null
-echo "$?"
+$bins/curl -L -o $based/download/litegapps_menu https://raw.githubusercontent.com/litegapps/litegapps-controller/main/litegapps_controller/litegapps_menu.sh 2>/dev/null
+if [ $? != 0 ]; then
+print "$R Please check your internet connection $G"
+sleep 6s
+exit 1
+fi
 if [ "$(getp litegapps_menu_code $based/download/litegapps_menu)" -gt "$(getp litegapps_menu_code $based/litegapps_menu.sh)" ]; then
 print " "
 print "  Litegapps Menu Latest version is available ! : "
@@ -43,11 +47,20 @@ print "- update successful"
 elif [ "$(getp litegapps_menu_code $based/download/litegapps_menu)" -eq "$(getp litegapps_menu_code $based/litegapps_menu.sh)" ]; then
 print "  Litegapps Menu is up to date !"
 print "  Version : $(getp litegapps_menu_version $based/litegapps_menu.sh)"
+else
+print "  Mode DEV !"
+print "  Version old : $(getp litegapps_menu_version $based/litegapps_menu.sh)"
+print "  Version new : $(getp litegapps_menu_version $based/download/litegapps_menu)" 
 fi
 #del $based/download/litegapps_menu
 
 print "${Y}- Checking Updater${G}"
-$bins/curl -L -o $based/download/updater https://raw.githubusercontent.com/litegapps/litegapps-controller/main/litegapps/updater.sh 2>/dev/null
+$bins/curl -L -o $based/download/updater https://raw.githubusercontent.com/litegapps/litegapps-controller/main/litegapps_controller/updater.sh 2>/dev/null
+if [ $? != 0 ]; then
+print "$R Please check your internet connection $G"
+sleep 6s
+exit 1
+fi
 if [ "$(getp updatercode $based/download/updater)" -gt "$(getp updatercode $based/updater.sh)" ]; then
 print
 print "  Updater Latest version is available ! : "
@@ -63,8 +76,13 @@ print "- Update successful"
 elif [ "$(getp updatercode $based/download/updater)" -eq "$(getp updatercode $based/updater.sh)" ]; then
 print "  Updater is up to date !"
 print "  Version : $(getp updaterversion $based/updater.sh)"
+else
+print "  Mode DEV !"
+print "  Version old : $(getp updaterversion $based/updater.sh)"
+print "  Version new : $(getp updaterversion $based/download/updater)" 
 fi
-del $based/download/updater
+
+#del $based/download/updater
 
 print "- Done"
 print

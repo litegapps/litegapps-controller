@@ -3,8 +3,8 @@
 #Litegapps controller
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-#29-12-2020 08-06-2021
-litegapps_menu_version=1.5
+#29-12-2020 14-07-2021
+litegapps_menu_version=0.5
 litegapps_menu_code=5
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #base func
@@ -22,7 +22,7 @@ BGBL='\e[1;30;47m'	# Background W Text Bl
 N='\e[0m'			# How to use (example): echo "${G}example${N}"
 ####functions
 getp(){ grep "^$1" "$2" | head -n1 | cut -d = -f 2; }
-
+getp1(){ echo $1 | head -n1 | cut -d : -f 2; }
 getp5(){ grep "^$1" "$2" | head -n1 | cut -d = -f 2; }
 spinner() {
   set +x
@@ -194,7 +194,7 @@ if [ "$modeselect" = "install" ]; then
 	if [ $? -eq 0 ]; then
 		print "${WHITE}- Downloading status : ${G}[OK]${WHITE}"
 		install_package $BASE/download/$name.zip
-		rm -rf $base/download
+		rm -rf $BASE/download
 	else
     	print "${R} !!! Downloading Package Failed !!!"
     	print " "
@@ -207,11 +207,11 @@ elif [ "$modeselect" = "uninstall" ]; then
 	clear
 	printmid "${C}Uninstall Packages${G}"
 	print
-	if [ -f $base/modules/$name/litegapps-uninstall.sh ]; then
-		chmod 755 $base/modules/$name/litegapps-uninstall.sh
-		. $base/modules/$name/litegapps-uninstall.sh
+	if [ -f $BASE/modules/$name/litegapps-uninstall.sh ]; then
+		chmod 755 $BASE/modules/$name/litegapps-uninstall.sh
+		. $BASE/modules/$name/litegapps-uninstall.sh
 	fi
-	[ -d $base/modules/$name ] && rm -rf $base/modules/$name
+	[ -d $BASE/modules/$name ] && rm -rf $base/modules/$name
 	print
 fi
 
@@ -278,20 +278,21 @@ menu_tweaks(){
 	clear
 	printmid "${C}Litegapps Tweaks${G}"
 	print
-	print " 1. Fix Permissions"
-	print " 2. Back"
+	print " 1. Fix Permissions system files"
+	print " 2. Fix Permissions google apps"
+	print " 3. Back"
 	print
 	echo -n "  Select Menu : "
 	read perm33
 	case $perm33 in
 		1)
 			clear
-			printmid "Fix Permissions"
+			printmid "Fix Permissions system files"
 			print
 			for iz in $SYSDIR/app $SYSDIR $SYSDIR/product/app $SYSDIR/product/priv-app; do
 				if [ -d $iz ]; then
 				 	find $iz -type f -name *.apk | while read asww; do
-				 		print "${CYAN}set permissions $asww"
+				 		print "${CYAN}set permission $asww"
 				 		chmod 644 $asww
 				 		chcon -h u:object_r:system_file:s0 $asww
 				 		print "${GREEN}set permission $(dirname $asww)"
@@ -304,6 +305,38 @@ menu_tweaks(){
 		     menu_end
 			;;
 		2)
+			clear
+			printmid "Fix Permissions Google Apps"
+			print
+			PACKAGE_LIST_APPS="
+			com.google.android.gms
+			com.android.vending
+			com.google.android.play.games
+			"
+			for WAHYU90 in $PACKAGE_LIST_APPS; do
+			PACKAGE=`getp1 $WAHYU90`
+			print "- ${Y}Set permissions app : $PACKAGE $G"
+			pm grant $PACKAGE_LIST_APPS android.permission.READ_CALENDAR 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.READ_CALL_LOG  2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.ACCESS_FINE_LOCATION 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.READ_EXTERNAL_STORAGE 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.ACCESS_COARSE_LOCATION 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.READ_PHONE_STATE 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.SEND_SMS 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.CALL_PHONE 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.WRITE_CONTACTS 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.CAMERA 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.WRITE_CALL_LOG 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.PROCESS_OUTGOING_CALLS 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.GET_ACCOUNTS 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.WRITE_EXTERNAL_STORAGE 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.RECORD_AUDIO 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.ACCESS_MEDIA_LOCATION 2>/dev/null
+			pm grant $PACKAGE_LIST_APPS android.permission.READ_CONTACTS 2>/dev/null
+		done
+		menu_end
+		;;
+		3)
 		break
 			;;
 		*)
@@ -337,8 +370,8 @@ menu_end
 
 
 menu_settings(){
-test ! -d /data/litegapps/config && mkdir -p /data/litegapps/config
-CONFIGDIR=/data/litegapps/config
+test ! -d $BASE/config && mkdir -p $BASE/config
+CONFIGDIR=$BASE/config
 while true; do
 if [ -f $CONFIGDIR/backup_restore ]; then
 backup_restore="${G}1.Backup And Restore = ON${G}"
@@ -403,14 +436,20 @@ clear
 printmid "${C}Litegapps Menu${G}"
 print
 print " ${WHITE} Mode : ${Y}$MODE_DESK ${G}"
+touch /system/wahyu6070 2>/dev/null
+if [ -f /system/wahyu6070 ]; then
+rm -rf /system/wahyu6070
+else
+print "$R ERROR : your system cannot be modified !!!"
+fi
 print
 print "1.Download package"
-print "2.Tweaks"
+print "2.Fix"
 print "3.Install ZIP packages"
 print "4.Settings"
 print "5.Updater"
-print "6.about "
-print "7.exit"
+print "6.About "
+print "7.Exit"
 print
 echo -n "Select Menu : ${V}"
 read menu77

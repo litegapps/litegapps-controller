@@ -2,11 +2,12 @@
 #
 #Litegapps controller
 #by wahyu6070
-#
+#LICENSE GPL+ 
+#Latest Update  14-07-2021
 . /tmp/backuptool.functions
 log=/data/media/0/Android/litegapps/28-litegapps-controller.log
 loglive=log=/data/media/0/Android/litegapps/28-litegapps-controller-live.log
-base=/data/media/0/Android/litegapps/litegapps_controller
+BASE=/data/media/0/Android/litegapps/litegapps_controller
 
 [ ! -d $(dirname $log) ] && mkdir -p $(dirname $log)
 
@@ -60,13 +61,19 @@ system=/system
 fi
 vendor=/vendor
 
+#enable/disable backup and restore
+if [ ! -f $BASE/config/backup_restore ]; then
+sedlog "config backup_restore is disable"
+exit 0
+fi
+
 
 case "$1" in
   backup)
   print "Litegapps Controller Backup"
-  for b in $(ls -1 $base/modules); do
-  	if [ -f $base/modules/$b/litegapps-list ]; then
-   	 for i in $(cat $base/modules/$b/litegapps-list); do
+  for b in $(ls -1 $BASE/modules); do
+  	if [ -f $BASE/modules/$b/litegapps-list ]; then
+   	 for i in $(cat $BASE/modules/$b/litegapps-list); do
     			if [ -f $S/$i ] && [ ! -L $S/$i ] ; then
     				sedlog "- Backuping •> $S/$i"
     				backup_file $S/$i
@@ -77,10 +84,10 @@ case "$1" in
   ;;
   restore)
   print "Litegapps Controller Restore"
-  for b in $(ls -1 $base/modules); do
-  	if [ -f $base/modules/$b/litegapps-list ]; then
-  	[ -f $base/modules/$b/litegapps-prop ] && printlog "• Restoring •> $(getp package.name $base/modules/$b/litegapps-prop )"
-   	 for i in $(cat $base/modules/$b/litegapps-list); do
+  for b in $(ls -1 $BASE/modules); do
+  	if [ -f $BASE/modules/$b/litegapps-list ]; then
+  	[ -f $BASE/modules/$b/litegapps-prop ] && printlog "• Restoring •> $(getp package.name $base/modules/$b/litegapps-prop )"
+   	 for i in $(cat $BASE/modules/$b/litegapps-list); do
    	 	sedlog "- Restoring •> $S/$i"
     		dir1=`dirname $S/$i`
     		restore_file $S/$i

@@ -5,7 +5,7 @@
 #License GPL3+
 
 propversion=V0.5
-propdate=03-07-2021
+propdate=14-07-2021
 
 # Colors
 GREEN='\e[01;32m'
