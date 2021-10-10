@@ -6,8 +6,7 @@
 #Latest Update  14-07-2021
 . /tmp/backuptool.functions
 log=/data/media/0/Android/litegapps/28-litegapps-controller.log
-loglive=log=/data/media/0/Android/litegapps/28-litegapps-controller-live.log
-BASE=/data/media/0/Android/litegapps/litegapps_controller
+BASE=/data/adb/litegapps_controller
 
 [ ! -d $(dirname $log) ] && mkdir -p $(dirname $log)
 
@@ -27,20 +26,8 @@ if ! $BOOTMODE; then
 print(){
 	ui_print "$1"
 	}
-	
-printlog(){
-	print "$1"
-	if [ "$1" != " " ]; then
-	echo "$1 [$(date '+%d/%m/%Y %H:%M:%S')]" >> $log
-	echo "$1 [$(date '+%d/%m/%Y %H:%M:%S')]" >> $loglive
-	else
-	echo "$1" >> $log
-	echo "$1" >> $loglive
-	fi
-	}
 sedlog(){
 	echo "[Processing]  $1 [$(date '+%d/%m/%Y %H:%M:%S')]" >> $log
-	echo "[Processing]  $1 [$(date '+%d/%m/%Y %H:%M:%S')]" >> $loglive
 	}
 	
 	

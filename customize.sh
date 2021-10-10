@@ -40,10 +40,10 @@ printlog " "
 if [ -f /data/adb/magisk/magiskboot ]; then
 	cp -pf /data/adb/magisk/magiskboot $MODPATH/system/bin/
 fi
-BASED6=/data/media/0/Android/litegapps/litegapps_controller
+BASED6=/data/adb/litegapps_controller
 [ -d $BASED6 ] && rm -rf $BASED6
 print "- Installing litegapps controller files"
-cp -af $MODPATH/litegapps_controller /data/media/0/Android/litegapps/
+cp -af $MODPATH/litegapps_controller /data/adb/
 chmod -R 755 $BASED6
 if [ -f /data/adb/magisk/magiskboot ]; then
 print "- Magiskboot detected"

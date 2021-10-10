@@ -1,10 +1,10 @@
 #litegapps controller
 #by wahyu6070
 #License GPL3+
-#29-12-2020 - 14-07-2021
-updaterversion=0,5
-updatercode=5
-based=/data/media/0/Android/litegapps/litegapps_controller
+#29-12-2020 - 10-010-2021
+updaterversion=0,6
+updatercode=6
+based=/data/adb/litegapps_controller
 bins=$based/bin
 
 getp(){

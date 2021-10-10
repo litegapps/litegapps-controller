@@ -3,9 +3,9 @@
 #Litegapps controller
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-#29-12-2020 14-07-2021
-litegapps_menu_version=0.5
-litegapps_menu_code=5
+#29-12-2020 14-10-2021
+litegapps_menu_version=0.6
+litegapps_menu_code=6
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #base func
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -35,6 +35,9 @@ spinner() {
   done
   set -x 2>>$VERLOG
 }
+check_package(){
+	pm list package | grep -q "$1"
+	}
 error() {
 	print
 	print "${RED}ERROR :  ${WHITE}$1${GREEN}"
@@ -54,7 +57,7 @@ x86_64) ARCH=x86_64 ;;
 *) abort " <$findarch> Your Architecture Not Support" ;;
 esac
 
-base=/data/media/0/Android/litegapps/litegapps_controller
+base=/data/adb/litegapps_controller
 BASE=$base
 BIN=$BASE/bin
 #system
@@ -78,7 +81,7 @@ MODE_INSTALL=MAGISK
 MODE_DESK="Magisk Module"
 SYSTEM_INSTALL=/data/adb/modules/litegapps/system
 else
-MODE_DESK="LiteGapps Module"
+MODE_DESK="Android system"
 MODE_INSTALL=REGULER
 SYSTEM_INSTALL=/system
 fi
@@ -188,7 +191,7 @@ if [ "$modeselect" = "install" ]; then
 	[ -d $BASE/download ] && rm -rf $BASE/download
 	test ! -d $BASE/download && mkdir -p $BASE/download
 	print "- Download package"
-	#DEV_MODE
+	DEV_MODE
 	$BIN/curl -L -o $BASE/download/$name.zip $url
 	
 	if [ $? -eq 0 ]; then
@@ -353,6 +356,7 @@ clear
 printmid "${C}Package ZIP install${G}"
 print " "
 dirpackage=/data/media/0/Android/litegapps/package
+test ! -d $dirpackage && cdir $dirpackage
 numzip=0
 for IZIP in $(ls -1 $dirpackage); do
 	if [ -f $dirpackage/$IZIP ]; then
@@ -368,40 +372,105 @@ print "${Y} $numzip ${G}Package Installed"
 menu_end
 }
 
-
+TOOLS(){
+	while true; do
+	clear
+	printmid "${C}Tools${G}"
+	print
+	print "1. Clear data Gms and PlayStore"
+	print "2. Clear data litegapps"
+	print "3. Back"
+	print
+	echo -n "${C}Select Menu : ${G}"
+	read INPUT_TOOLS
+	case $INPUT_TOOLS in
+	1)
+	local LIST="
+	com.android.vending
+	com.google.android.gms
+	"
+	for W34 in $LIST; do
+		if check_package $W34; then
+			print "${G}- Clear data $W34"
+			pm clear $W34 >/dev/null
+		else
+			print "${R}! package <$W34> not found"
+		fi
+	done
+	sleep 3s
+	;;
+	2)
+	for W12 in /data/kopi /data/litegapps /sdcard/Android/litegapps; do
+		if [ -d $W12 ]; then
+			print "- Cleaning $W12"
+			rm -rf $W12
+		fi
+	done
+	sleep 3s
+	;;
+	3) break ;;
+	*)
+	error "Please select Menu"
+	sleep 2s
+	;;
+	esac
+	done
+	}
 menu_settings(){
 test ! -d $BASE/config && mkdir -p $BASE/config
 CONFIGDIR=$BASE/config
 while true; do
-if [ -f $CONFIGDIR/backup_restore ]; then
-backup_restore="${G}1.Backup And Restore = ON${G}"
-else
-backup_restore="${G}1.Backup And Restore = ${WHITE}OFF${G}"
-fi
-clear
-printmid "${C}Settings${G}"
-print
-print "$backup_restore"
-print "2.Exit"
-print
-echo -n "${C}Select Menu : ${G}"
-read inputsetting
-case $inputsetting in
-1)
-if [ ! -f $CONFIGDIR/backup_restore ]; then
-echo "true" > $CONFIGDIR/backup_restore
-elif [ -f $CONFIGDIR/backup_restore ]; then
-rm -rf $CONFIGDIR/backup_restore
-fi
-;;
-2)
-break
-;;
-*)
-error "Please select Menu"
-sleep 2s
-;;
-esac
+	clear
+	printmid "${C}Settings${G}"
+	if [ -f $CONFIGDIR/backup_restore ]; then
+		print "${G}1.Backup And Restore = ON${G}"
+	else
+		print "${G}1.Backup And Restore = ${WHITE}OFF${G}"
+	fi
+	if [ -f /data/media/0/Android/litegapps/mode_developer ]; then
+		print "${G}2.[Installer] Mode Developer = ON${G}"
+	else
+		print "${G}2.[Installer] Mode Developer = ${WHITE}OFF${G}"
+	fi
+	if [ ! -f /data/media/0/Android/litegapps/disable_post_fs ]; then
+		print "${G}3.[Installer] Litegapps post fs = ON${G}"
+	else
+		print "${G}3.[Installer] Litegapps post fs = ${WHITE}OFF${G}"
+	fi
+	print "4.Exit"
+	print
+	echo -n "${C}Select Menu : ${G}"
+	read inputsetting
+	case $inputsetting in
+	1)
+		if [ ! -f $CONFIGDIR/backup_restore ]; then
+			echo "true" > $CONFIGDIR/backup_restore
+		elif [ -f $CONFIGDIR/backup_restore ]; then
+			rm -rf $CONFIGDIR/backup_restore
+		fi
+	;;
+	2)
+		if [ ! -f /data/media/0/Android/litegapps/mode_developer ]; then
+			echo "true" > /data/media/0/Android/litegapps/mode_developer
+		elif [ -f /data/media/0/Android/litegapps/mode_developer ]; then
+			rm -rf /data/media/0/Android/litegapps/mode_developer
+		fi
+	;;
+	3)
+		if [ ! -f /data/media/0/Android/litegapps/disable_post_fs ]; then
+			echo "true" > /data/media/0/Android/litegapps/disable_post_fs
+		elif [ -f /data/media/0/Android/litegapps/disable_post_fs ]; then
+			rm -rf /data/media/0/Android/litegapps/disable_post_fs
+		fi
+	;;
+	4)
+		break
+	;;
+	*)
+		error "Please select Menu"
+		sleep 2s
+	;;
+	esac
 done
 }
 menu_about(){
@@ -426,6 +495,9 @@ menu_about(){
 	printmid "${Y}Settings${G}"
 	print "Settings "
 	print " "
+	printmid "${Y}Tools${G}"
+	print "Tools "
+	print " "
 	printmid "${Y}Updater${WHITE}"
 	print " litegapps menu update"
 	print " "
@@ -440,16 +512,17 @@ touch /system/wahyu6070 2>/dev/null
 if [ -f /system/wahyu6070 ]; then
 rm -rf /system/wahyu6070
 else
-print "$R ERROR : your system cannot be modified !!!"
+print "$R ERROR : your system cannot be modified !!! $G"
 fi
 print
 print "1.Download package"
 print "2.Fix"
 print "3.Install ZIP packages"
 print "4.Settings"
-print "5.Updater"
-print "6.About "
-print "7.Exit"
+print "5.Tools"
+print "6.Updater"
+print "7.About "
+print "8.Exit"
 print
 echo -n "Select Menu : ${V}"
 read menu77
@@ -467,17 +540,20 @@ read menu77
 		menu_settings
 		;;
 		5)
+		TOOLS
+		;;
+		6)
 		chmod 755 $BASE/updater.sh
 		. /$BASE/updater.sh
 		;;
-		6)
+		7)
 		menu_about
 		;;
-		7)
+		8)
 		break
 		;;
 		*)
-		error "please select 1-7 !"
+		error "please select 1-9 !"
 		sleep 2s
 		;;
 		esac
