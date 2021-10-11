@@ -163,6 +163,7 @@ if [ -f $base/modules/$name/litegapps-uninstall.sh ]; then
 	print
 	print "1.Install"
 	print "2.Uninstall"
+	print "3.Cancel"
 	print
 	echo -n "${G}Select Menu :${WHITE} "
 	read menuin
@@ -174,6 +175,9 @@ if [ -f $base/modules/$name/litegapps-uninstall.sh ]; then
 	2)
 	modeselect=uninstall
 	break
+	;;
+	3)
+	return 0
 	;;
 	*)
 	error "please select 1 or 2"
@@ -191,7 +195,7 @@ if [ "$modeselect" = "install" ]; then
 	[ -d $BASE/download ] && rm -rf $BASE/download
 	test ! -d $BASE/download && mkdir -p $BASE/download
 	print "- Download package"
-	DEV_MODE
+	#DEV_MODE
 	$BIN/curl -L -o $BASE/download/$name.zip $url
 	
 	if [ $? -eq 0 ]; then
@@ -230,29 +234,89 @@ menu_download(){
 	clear
 	printmid "${C}Packages List${G}"
 	print
-	print "1.Google Services Framework"
-	print "2.GMS"
-	print "3.Play Store"
-	print "4.Setup Wizard"
-	print "5.About"
-	print "6.Exit"
+	print "1.Android Web View"
+	print "2.Chrome"
+	print "3.Etc,framework"
+	print "4.Gmail"
+	print "5.Gms Core"
+	print "6.Google Calendar Sync Adapter"
+	print "7.Google Contacts Sync Adapter"
+	print "8.Google Search"
+	print "9.Google Services Framework"
+	print "10.Google TTS"
+	print "11.Location History"
+	print "12.Maps"
+	print "13.Photos"
+	print "14.Play Store"
+	print "15.Setup Wizard"
+	print "16.Videos"
+	print "17.Wellbeing"
+	print "18.Youtube"
+	print "19.Youtube Music"
+	print "20.About"
+	print "21.Exit"
 	print
 	echo -n " Select List Menu : ${V}"
 	read dmenu
 	case $dmenu in
 	1)
-	download_file GoogleServiceFramework https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GoogleServiceFramework.zip/download
+	download_file AndroidWebView https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/AndroidWebView.zip/download
 	;;
 	2)
-	download_file GmsCore https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GmsCore.zip/download
+	download_file Chrome https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Chrome.zip/download
 	;;
 	3)
-	download_file PlayStore https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/PlayStore.zip/download
+	download_file Etc https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Etc.zip/download
 	;;
 	4)
-	download_file SetupWizard https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/SetupWizard.zip/download
+	download_file Gmail https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Gmail.zip/download
 	;;
 	5)
+	download_file GmsCore https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GmsCore.zip/download
+	;;
+	6)
+	download_file GoogleCalendarSyncAdapter https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GoogleCalendarSyncAdapter.zip/download
+	;;
+	7)
+	download_file GoogleContactsSyncAdapter https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GoogleContactsSyncAdapter.zip/download
+	;;
+	8)
+	download_file GoogleSearch https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GoogleSearch.zip/download
+	;;
+	9)
+	download_file GoogleServicesFramework https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GoogleServicesFramework.zip/download
+	;;
+	10)
+	download_file GoogleTTS https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Chrome.zip/download
+	;;
+	11)
+	download_file LocationHistory https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/LocationHistory.zip/download
+	;;
+	12)
+	download_file Maps https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Maps.zip/download
+	;;
+	13)
+	download_file Photos https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Photos.zip/download
+	;;
+	14)
+	download_file PlayStore https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/PlayStore.zip/download
+	;;
+	15)
+	download_file SetupWizard https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/SetupWizard.zip/download
+	;;
+	16)
+	download_file Videos https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Videos.zip/download
+	;;
+	17)
+	download_file Wellbeing https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Wellbeing.zip/download
+	;;
+	18)
+	download_file Youtube https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Youtube.zip/download
+	;;
+	19)
+	download_file YoutubeMusic https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/YoutubeMusic.zip/download
+	;;
+	20)
 	clear
 	printmid "${C}About${G}"
 	print
@@ -266,7 +330,7 @@ menu_download(){
 	print
 	menu_end
 	;;
-	6)
+	21)
 	break
 	;;
 	*)
