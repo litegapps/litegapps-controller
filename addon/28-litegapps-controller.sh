@@ -81,6 +81,10 @@ case "$1" in
     		ch_con $dir1
   	   done
   	 fi
+  	 if [ -f $BASE/modules/$b/package-restore.sh ]; then
+  	 chmod 755 $BASE/modules/$b/package-restore.sh
+  	 . $BASE/modules/$b/package-restore.sh
+  	 fi
   done
   ;;
   pre-backup)

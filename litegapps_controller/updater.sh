@@ -1,9 +1,9 @@
 #litegapps controller
 #by wahyu6070
 #License GPL3+
-#29-12-2020 - 10-010-2021
-updaterversion=0,6
-updatercode=6
+#29-12-2020 - 03-11-2021
+updaterversion=0,7
+updatercode=7
 based=/data/adb/litegapps_controller
 bins=$based/bin
 
@@ -31,7 +31,7 @@ $bins/curl -L -o $based/download/litegapps_menu https://raw.githubusercontent.co
 if [ $? != 0 ]; then
 print "$R Please check your internet connection $G"
 sleep 6s
-exit 1
+return 1
 fi
 if [ "$(getp litegapps_menu_code $based/download/litegapps_menu)" -gt "$(getp litegapps_menu_code $based/litegapps_menu.sh)" ]; then
 print " "

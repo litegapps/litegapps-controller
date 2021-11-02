@@ -3,9 +3,9 @@
 #Litegapps controller
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-#29-12-2020 14-10-2021
-litegapps_menu_version=0.6
-litegapps_menu_code=6
+#
+litegapps_menu_version=0.7
+litegapps_menu_code=7
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #base func
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -130,22 +130,35 @@ install_package(){
 		print "${R}Package is corrupt !!"
 		return 1
 	fi
+	
+	name_package_module=`getp package.module $base/tmp/litegapps-prop`
+	MOD_MODULE=$BASE/modules/$name_package_module
+	
 	if [ -f $base/tmp/litegapps-install.sh ]; then
 		chmod 755 $base/tmp/litegapps-install.sh
 		. $base/tmp/litegapps-install.sh
 	else
 		print "${R} this package litegapps-install.sh not found ! $G"
 	fi
-	
-	name_package_module=`getp package.module $base/tmp/litegapps-prop`
 	[ ! -d $base/modules ] && mkdir -p $base/modules
-	[ -d $base/modules/$name_package_module ] && rm -rf $base/modules/$name_package_module
-	[ ! -d $base/modules/$name_package_module ] && mkdir -p $base/modules/$name_package_module
-	for move_package in litegapps-prop litegapps-list litegapps-uninstall.sh litegapps-restore.sh module.prop list-debloat backup; do
+	[ -d $MOD_MODULE ] && rm -rf $MOD_MODULE
+	[ ! -d $MOD_MODULE ] && mkdir -p $MOD_MODULE
+	list_move_package="
+	litegapps-prop 
+	litegapps-list
+	litegapps-uninstall.sh
+	litegapps-restore.sh
+	package-uninstall.sh
+	package-restore.sh
+	module.prop
+	list-debloat
+	backup
+	"
+	for move_package in $list_move_package; do
 		if [ -f $base/tmp/$move_package ]; then
-			cp -pf $base/tmp/$move_package $base/modules/$name_package_module/
+			cp -pf $base/tmp/$move_package $MOD_MODULE/
 		elif [ -d $base/tmp/$move_package ]; then
-			cp -af $base/tmp/$move_package $base/modules/$name_package_module/
+			cp -af $base/tmp/$move_package $MOD_MODULE/
 		fi
 	done
 	rm -rf $base/tmp
@@ -217,6 +230,10 @@ elif [ "$modeselect" = "uninstall" ]; then
 	if [ -f $BASE/modules/$name/litegapps-uninstall.sh ]; then
 		chmod 755 $BASE/modules/$name/litegapps-uninstall.sh
 		. $BASE/modules/$name/litegapps-uninstall.sh
+	fi
+	if [ -f $BASE/modules/$name/package-uninstall.sh ]; then
+		chmod 755 $BASE/modules/$name/package-uninstall.sh
+		. $BASE/modules/$name/package-uninstall.sh
 	fi
 	[ -d $BASE/modules/$name ] && rm -rf $base/modules/$name
 	print
