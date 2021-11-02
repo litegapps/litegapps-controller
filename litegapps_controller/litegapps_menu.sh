@@ -137,7 +137,11 @@ install_package(){
 	if [ -f $base/tmp/litegapps-install.sh ]; then
 		chmod 755 $base/tmp/litegapps-install.sh
 		. $base/tmp/litegapps-install.sh
+	elif [ -f $base/tmp/package-install.sh ]; then
+		chmod 755 $base/tmp/package-install.sh
+		. $base/tmp/package-install.sh
 	else
+		print " "
 		print "${R} this package litegapps-install.sh not found ! $G"
 	fi
 	[ ! -d $base/modules ] && mkdir -p $base/modules
@@ -169,7 +173,7 @@ install_package(){
 download_file(){
 url=$2
 name=$1
-if [ -f $base/modules/$name/litegapps-uninstall.sh ]; then
+if [ -f $base/modules/$name/litegapps-uninstall.sh ] || [ -f $base/modules/$name/package-uninstall.sh ]; then
 	while true; do
 	clear
 	printmid "${C}Select mode${G}"
