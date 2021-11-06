@@ -449,7 +449,8 @@ for IZIP in $(ls -1 $dirpackage); do
 		numzip=$numzip2
 		install_package $dirpackage/$IZIP
 	else
-		print "${R} This not zip file : <$dirpackage/$IZIP>"
+		print "${R} This not zip file : <$dirpackage/$IZIP>${G}"
+		print " "
 	fi
 done
 print
