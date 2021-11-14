@@ -3,9 +3,11 @@
 #by wahyu6070 @xda-developers
 #since 08-07-2019
 #License GPL3+
+#if you copy some code here please permission to the owner
+#
 
 propversion=v0.7
-propdate=02-11-2021
+propdate=14-11-2021
 
 # Colors
 GREEN='\e[01;32m'
@@ -22,7 +24,7 @@ NC='\033[0m'
 N='\e[0m'
 
 
-BASED=/data/media/0/Android/litegapps
+BASED=/sdcard/Android/litegapps
 LOG=$BASED/liteggapps_controller.log
 DATA=$BASED/data
 
@@ -56,8 +58,30 @@ loadings() {
     printf "\r${@} [${a}Second]"
   done
 }
+print_title(){
+	clear
+	printmid "${YELLOW}$1${GREEN}"
+	print " "
+	}
 
-
+spinner() {
+  set +x
+  PID=$!
+  h=0; anim='-\|/';
+  while [ -d /proc/$PID ]; do
+    h=$(((h+1)%4))
+    sleep 0.02
+    printf "\r${@} [${anim:$h:1}]"
+  done
+  set -x 2>>$VERLOG
+}
+end_menu(){
+	print " "
+	print "${YELLOW}1. Back"
+	print " "
+	echo -n "${VIOLET} Select Menu : ${CYAN}"
+	read lol
+	}
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 # LIST APPS
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -105,10 +129,6 @@ black_func(){
 		[[ "$1" == $zzz ]] && return 0
 	done
 	}
-
-	
-	
-	
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #Litegapps
@@ -136,26 +156,6 @@ x86) ARCH=x86 ;;
 x86_64) ARCH=x86_64 ;;
 *) abort " <$findarch> Your Architecture Not Support" ;;
 esac
-
-
-spinner() {
-  set +x
-  PID=$!
-  h=0; anim='-\|/';
-  while [ -d /proc/$PID ]; do
-    h=$(((h+1)%4))
-    sleep 0.02
-    printf "\r${@} [${anim:$h:1}]"
-  done
-  set -x 2>>$VERLOG
-}
-
-
-
-
-
-#▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-#▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -316,7 +316,7 @@ gaming(){
 	clear
 	[ -f $DATA/gaming_mode_2 ] && gaming22="${VIOLET}2.Disable Gaming Mode 2${GREEN}" || gaming22="2.Gaming Mode 2 (Not Recomended)"
 	[ -f $DATA/gaming_mode_3 ] && gaming23="${VIOLET}3.Disable Gaming Mode 3${GREEN}" || gaming23="3.Gaming Mode 3"
-	print "$YELLOW                  Gaming Mode Select $GREEN"
+	printmid "${YELLOW}Gaming Mode Select $GREEN"
 	print
 	print "1.Gaming Mode 1"
 	print "$gaming22"
@@ -333,20 +333,17 @@ gaming(){
 	2) gaming2 ;;
 	3) gaming3 ;;
 	4)
-	clear
-	printmid "Select list all"
-	print
+	print_title "Select list all"
 	print "1.List apps installed"
-	print "2.List system and apps"
-	print "3.Exit"
+	print "2.List system"
+	print "3.List system and apps"
+	print "4.Exit"
 	print
 	echo -n "Select Menu : "
 	read appps
 	case $appps in
 		1)
-		clear
-		printmid "- Creating list apps installed"
-		print
+		print_title "Creating list apps installed"
 		del $BASED/list_apps_installed
 		for capps in $(pm list packages -3); do
 		print "••> $(getp1 $capps)"
@@ -362,9 +359,24 @@ gaming(){
 		read WAHYU89
 		;;
 		2)
-		clear
-		printmid "- Creating list system and apps"
+		print_title "Creating list system"
+		del $BASED/list_system
+		for capps in $(pm list packages -s); do
+		print "••> $(getp1 $capps)"
+		print "$(getp1 $capps)" >> $BASED/list_system
+		done
 		print
+		print "${WHITE}- Check in •> $BASED/$base/list_system $GREEN"
+		print "- done"
+		print
+		print
+		print "1.Back"
+		print " "
+		echo -n "  Select Menu : "
+		read WAHYU88
+		;;
+		3)
+		print_title "Creating list system and apps"
 		del $BASED/list_system_apps
 		for capps in $(pm list packages); do
 		print "••> $(getp1 $capps)"
@@ -461,34 +473,8 @@ battery(){
 		print "- Done"
 	fi
 }
-
-addon(){
-	while true; do
-	clear
-	print "$BLUE                     Add-on $GREEN"
-	print
-	print "1. Fake Battery Set"
-	print "2. Led Calerful"
-	print "3. Disable Led"
-	print "4. Set brightness"
-	print "5. Boot Unpacker"
-	print "6. Set all permissions apk installed"
-	print "7. Enable All Apps"
-	print "8. Exit"
-	print " "
-	echo -n "Select Menu : "
-	read addons
-	case $addons in
-	1)
-		print
-		echo -n "Fake Batttery Number : "
-		read fake
-		echo $fake > /sys/class/power_supply/battery/capacity 
-	;;
-	2)
-		print
-		print "    LED Scale"
-		print
+addon_led_calerful(){
+		print_title "LED Calorfull"
 		print "1 Very Fast"
 		print "2 Fast"
 		print "3 medium"
@@ -520,6 +506,104 @@ addon(){
 			$ledscale
 			echo 0 > /sys/class/leds/green/brightness
 		done
+	}
+addon_boot_unpacker(){
+	if [ -f $BASED/boot.img ]; then
+			block=$BASED/boot.img
+		elif [ ! -z $(find /dev/block -type l -iname boot | head -n 1) ]; then
+			block=$(find /dev/block -type l -iname boot | head -n 1)
+		elif [ ! -z /dev/block/by-name/boot ]; then
+			block=/dev/block/by-name/boot
+		else
+			print
+			echo -n "- Set Manual Boot image : "
+			read setboot
+			block=$setboot
+		fi
+		
+		if [ $(command -v magiskboot) ]; then
+			local MAGISKBOOT=magiskboot
+		elif [ -f /data/adb/magisk/magiskboot ]; then
+			local MAGISKBOOT=/data/adb/magisk/magiskboot
+		fi
+		if [ "$MAGISKBOOT" ] && [ ! -z $block ]; then
+			print_title "Boot image Unpacker"
+			print "- Block  : $block"
+			print "- Output : $BASED/boot/<here>"
+			print " "
+			sleep 2s
+			del $BASED/boot
+			cdir $BASED/boot
+			cd $BASED/boot
+			print "- Unpack boot image"
+			sleep 1s
+			cat $block > $BASED/boot/old-boot.img
+			$MAGISKBOOT unpack -h $block 2>/dev/null
+			print "- Repack boot image"
+			$MAGISKBOOT repack $block 2>/dev/null
+			cd /
+			sleep 1s
+			print "- Unpackimg Done"
+			end_menu
+		else
+			print_title "Boot image Unpacker"
+			print "${RED}! Magiskboot or Boot.img Not found"
+			end_menu
+		fi
+	}
+addon_enable_all_apps(){
+	print_title "Enable All Apps"
+	for WAHYU67 in $(pm list packages); do
+		local APP_INPUT=`getp1 $WAHYU67`
+		for WAHYU77 in $blacklist_term; do
+			if [ $APP_INPUT != $WAHYU77 ]; then
+				pm enable $(getp1 $WAHYU67) 2>/dev/null | >/dev/null
+				if [ $? -eq 0 ]; then
+					print "${GREEN}[OK] •> $APP_INPUT"
+				else
+					print "${RED}[ERROR] •> $APP_INPUT"
+				fi
+			else
+				print "${YELLOW}[SKIP] <$APP_INPUT>"
+			fi
+		done
+	done
+	end_menu
+	}
+addon_ccg(){
+	print_title " Clean Cache Game"
+	for W2 in $LIST_GAME; do
+		if [ -d /data/data/$W2/cache ]; then
+			print "${YELLOW}[CLEAN]${GREEN} •> $W2 cache"
+			del /data/data/$W2/cache
+			del /sdcard/Android/data/$W2/cache
+		fi
+	done
+	end_menu
+	}
+addon(){
+	while true; do
+	print_title "Add-on"
+	print "1. Fake Battery Set"
+	print "2. Led Calerful"
+	print "3. Disable Led"
+	print "4. Set brightness"
+	print "5. Boot Unpacker"
+	print "6. Set all permissions apk installed"
+	print "7. Enable All Apps"
+	print "8. Clean Cache Game"
+	print "9. Exit"
+	print " "
+	echo -n "Select Menu : "
+	read addons
+	case $addons in
+	1)
+		print
+		echo -n "Fake Batttery Number : "
+		read fake
+		echo $fake > /sys/class/power_supply/battery/capacity 
+	;;
+	2)addon_led_calerful
 	;;
 	3)
 		print
@@ -544,51 +628,13 @@ addon(){
 			sleep 2s
 		fi
 	;;
-	5)
-		if [ -f $BASED/boot.img ]; then
-			block=$BASED/boot.img
-		elif [ ! -z $(find /dev/block -type l -iname boot | head -n 1) ]; then
-			block=$(find /dev/block -type l -iname boot | head -n 1)
-		elif [ ! -z /dev/block/by-name/boot ]; then
-			block=/dev/block/by-name/boot
-		else
-			print
-			echo -n "- Set Manual Boot image : "
-			read setboot
-			block=$setboot
-		fi
-	
-		if [ $(command -v magiskboot) ] && [ ! -z $block ]; then
-			print
-			print "       Boot image Unpacker"
-			print
-			print "- Block  : $block"
-			print "- Output : $BASED/boot/<here>"
-			print " "
-			sleep 2s
-			del $BASED/boot
-			cdir $BASED/boot
-			cd $BASED/boot
-			print "- Unpack boot image"
-			sleep 1s
-			cat $block > $BASED/boot/old-boot.img
-			magiskboot unpack -h $block 2>/dev/null
-			print "- Repack boot image"
-			magiskboot repack $block 2>/dev/null
-			cd /
-			sleep 1s
-			print "- Unpackimg Done"
-			sleep 7s
-		else
-			print
-			print "- Magiskboot or Boot.img Not found"
-			sleep 2s
-		fi
+	5) addon_boot_unpacker
 	;;
 	6)
+		print_title "Set All Permissions APK Installed"
 		for b in $(pm list packages -3); do
 			package=`getp1 $b`
-			print "- Set permissions : $package"
+			print "${GREEN}- Set permissions : ${CYAN}$package"
 			pm grant $package android.permission.READ_CALENDAR 2>/dev/null
 			pm grant $package android.permission.READ_CALL_LOG  2>/dev/null
 			pm grant $package android.permission.ACCESS_FINE_LOCATION 2>/dev/null
@@ -607,48 +653,33 @@ addon(){
 			pm grant $package android.permission.ACCESS_MEDIA_LOCATION 2>/dev/null
 			pm grant $package android.permission.READ_CONTACTS 2>/dev/null
 		done
-		print "- Done"
-		sleep 5s
+		end_menu
 	;;
-	7)
-	clear
-	printmid "${YELLOW}Enable All APPS"
-	print
-	for WAHYU67 in $(pm list packages); do
-		pm enable $(getp1 $WAHYU67) 2>/dev/null | >/dev/null  && print "${GREEN}[OK] •> $(getp1 $WAHYU67)" || print "${RED}[ERROR] •> $(getp $WAHYU67)"
-	done
-	print " "
-	print "- Done"
-	print
-	sleep 8s
+	7) addon_enable_all_apps
 	;;
-	8) break ;;
+	8)
+	addon_ccg
+	;;
+	9) break ;;
 	*)
 		error "Invalid selection"; sleep 2s ;;
 	esac
 	done
 	}
 
-
-ccg(){
-	if [ -d /data/data/com.mobile.legends ]; then
-	print "- Cleaning Mobile Legend Cache"
-	del /data/data/com.mobile.legends/cache
-	del /data/media/0/Android/data/com.mobile.legends/cache
-	fi
-	if [ -d /data/data/com.tencent.ig ]; then
-	print "- Cleaning PUBG Mobile Cache"
-	del /data/data/com.tencent.ig/cache
-	del /data/media/0/Android/data/com.tencent.ig/cache
-	fi
-	}
-
 testping(){
-	print
-	for pingwhhx in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-		coreping=`ping -w 3s google.com | tail -5 | grep time= | cut -d' ' -f8 | cut -d = -f2 | cut -d . -f1`
-			if [ ! "$coreping" ]; then
+	print_title "Test Ping Signal"
+	local SERVER=google.com
+	print " Server : $SERVER"
+	print " "
+	for ping_loop in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 ; do
+		coreping=`ping -w 3s $SERVER | tail -5 | grep time= | cut -d' ' -f8 | cut -d = -f2 | cut -d . -f1`
+			if [ ! "$coreping" ] && [ "$coreping" = *"unknown host"* ]; then
+				print "${RED} PING ${WHITE}•> ${RED}Server unknown host"
+				break
+			elif [ ! "$coreping" ]; then
 				print "${RED} PING ${WHITE}•> ${RED}Server not respon"
+				break
 			elif [ "$coreping" -lt 30 ]; then
 				print "${GREEN} PING ${WHITE}•>${GREEN} $coreping STATUS •> Very Good"
 			elif [ "$coreping" -lt 70 ]; then
@@ -685,16 +716,15 @@ print "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.
 print "This is free software: you are free to change and redistribute it."
 print "There is NO WARRANTY, to the extent permitted by law."
 print "${YELLOW}"
-print " Github  : https://github.com/litegapps/litegapps-controller"
-print " Telegram: https://t.me/litegapps"
+print " Github   : https://github.com/litegapps/litegapps-controller"
+print " Telegram : https://t.me/litegapps"
+print " Youtube  : https://youtube.com/c/wahyu6070"
 print " $GREEN"
 }
 
 menu(){
 	while true; do
-	clear
-	print "$BLUE                    $2 $GREEN"
-	print
+	print_title "$2"
 	$1
 	print
 	print "${CYAN}1.Back To Menu      ${GREEN}2.Refresh"
@@ -732,15 +762,15 @@ while true; do
 clear
 test -f $DATA/battery_saver && batterystatus="${VIOLET}3.Disable Battery... ${NC}${GREEN}" || batterystatus="3.Battery Saver      "
 print " "
-print "     ${YELLOW}Litegapps ${GREEN}Controller $GREEN"
+print "                   ${CYAN}Lite${BLUE}G${RED}a${YELLOW}p${BLUE}p${GREEN}s ${YELLOW}Controller${GREEN}"
 print " "
-print "1.Boost              6.Memory Info"
-print "2.Gaming Mode        7.Device Info"
-print "${batterystatus}8.Add on"
-print "4.Check Ping         9.About"
-print "${YELLOW}5.Litegapps Menu${GREEN}     10.Exit"
+print " "
+print "1.Boost              ${YELLOW}5.Litegapps Menu${GREEN}      9.Tweaks"
+print "2.Gaming Mode        6.Memory Info         10.Settings"
+print "${batterystatus}7.Device Info         11.About"
+print "4.Check Ping         8.Add-on              12.Exit"
 print
-echo -n "Choose one of the numbers : "
+echo -n "${YELLOW}Choose one of the numbers : ${CYAN}"
 read pilih
 case $pilih in
 1) menu boost Boost ;;
@@ -758,8 +788,10 @@ case $pilih in
 6) menu meminfo "Memory Info" ;;
 7) menu device "Device info" ;;
 8) addon ;;
-9 | about) menu about About ;;
-10 | exit)  
+9) tweaks ;;
+10) SETTINGS ;;
+11 | about) menu about About ;;
+12 | exit | e)  
 print " $WHITE "
 break 
 ;;
