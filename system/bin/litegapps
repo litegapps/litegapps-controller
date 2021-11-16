@@ -82,6 +82,17 @@ end_menu(){
 	echo -n "${VIOLET} Select Menu : ${CYAN}"
 	read lol
 	}
+SELECT(){
+	print
+	echo -n "${YELLOW}Choose one of the numbers : ${CYAN}"
+	read PILIH
+	}
+print_true(){
+	print "${GREEN}${1} = ${GREEN}${2}${GREEN}"
+	}
+print_false(){
+	print "${GREEN}${1} = ${WHITE}${2}${GREEN}"
+	}
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 # LIST APPS
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -105,6 +116,7 @@ com.mixplorer
 com.google.android.apps.messaging
 com.google.android.play.games
 ch.deletescape.lawnchair.plah
+com.topjohnwu.magisk
 "
 LIST_GAME="
 com.mobile.legends
@@ -114,8 +126,21 @@ com.neptune.domino
 com.garena.game.codm
 com.chess
 "
-
-black_func(){
+black_func_1(){
+	local BLACK_LIST_GAMING_1=$DATA/black_list_gaming1
+	if [ -f $DATA/black_list_gaming1 ]; then
+		blacklist_game="$(cat $BLACK_LIST_GAMING_1)"
+	else
+		for WAHYU2345 in $LIST_GAME; do
+			echo "$WAHYU2345" >> $BLACK_LIST_GAMING_1
+		done
+		blacklist_game="$(cat $BLACK_LIST_GAMING_1)"
+	fi
+	for zzz in $blacklist_apps $blacklist_game $blacklist_system $blacklist_term; do
+		[[ "$1" == $zzz ]] && return 0
+	done
+	}
+black_func_2(){
 	BLACK_LIST_GAMING_2=$DATA/black_list_gaming2
 	if [ -f $DATA/black_list_gaming2 ]; then
 		blacklist_game="$(cat $BLACK_LIST_GAMING_2)"
@@ -165,15 +190,14 @@ print "- Boost...";
 print " ";
 for z in $(pm list packages -3) $system_list; do
 boost6071=`getp1 $z`
-   case $boost6071 in
-     com.termux | com.termoneplus )
-        print "${YELLOW}[SKIP] •> ${WHITE}${boost6071//com.}"
-        ;;
-        
-     *)   
-        am force-stop $boost6071 && print "${GREEN}[OK] •> ${WHITE}${boost6071//com.}" || print "${RED}[ERROR] •> ${WHITE}${boost6071//com.}" 2>/dev/null
-     ;;
-    esac  
+	for WZ in $blacklist_term; do
+		if [[ "$boost6071" = $WZ ]]; then
+			print "${YELLOW}[SKIP] •> ${WHITE}${boost6071//com.}"
+			break
+		else
+			am force-stop $boost6071 && print "${GREEN}[OK] •> ${WHITE}${boost6071//com.}" || print "${RED}[ERROR] •> ${WHITE}${boost6071//com.}" 2>/dev/null
+		fi
+	done
 done
 print "- Done ";
 }
@@ -195,23 +219,30 @@ device(){
 	print "Kernel = $(uname -r)" |  tee -a $LOG;
 	print "Chipset = $(getprop ro.product.board) " |  tee -a $LOG;
 	print "GPU = $(cat /sys/kernel/gpu/gpu_model)"
-	for i in /system/xbin/busybox /sbin/busybox /system/bin/busybox /vendor/bin
-	do
-	[ -f $i ] && print "Busybox = Installed" || print "${WHITE}Busybox = Not found $GREEN"
-	 break 
-    done
+	[ "$(command -v busybox)" ] && print "Busybox = Installed" || print "${WHITE}Busybox = Not found $GREEN"
     if command -v magisk >/dev/null; then
     	print "Magisk = Installed"
     	print "Magisk version = $(magisk -v)"
     	print "Magisk Version code = $(magisk -V)"
     	print "Magisk path =$(magisk --path)"
     else
-    	print "magisk = Not found"
+    	print "${WHITE}magisk = Not found"
     fi
     [ "$(getprop persist.vendor.camera.HAL3.enabled)" -eq 1 ] && print "Camera2api = Enable" || print "${WHITE}Camera2api = Disable $GREEN"
     [ "$(grep f2fs /vendor/etc/fstab.qcom)" ] && print "F2FS = This ROM supports F2FS" || print "${WHITE}F2FS = This ROM not supports F2FS${GREEN}"
     test -f /sys/kernel/touchpanel/dclicknode && [ "$(cat /sys/kernel/touchpanel/dclicknode)" -eq 1 ] && print "DT2W = Enable" || print "${WHITE}DT2W = Disable${GREEN}"
     [ -d /dev/block/mapper ] && print "Dynamic Partitions = true" || "Dynamic Partitions = false"
+    if pm list packages -s | grep -q com.google.android.gms; then
+    print "Gapps=installed"
+    else
+    print "${WHITE}Gapps=not found"
+    fi
+    print "Web View = $(settings get global webview_provider)"
+    if [ "$(settings get secure flashlight_available)" -eq 1 ]; then
+    	print_true "Flashlight" "Supported"
+    else
+    	print_false "Flashlight" "Not Supported"
+    fi
     }
 	
 gaming1(){
@@ -221,17 +252,17 @@ gaming1(){
 	print " ";
 		for z in $(pm list packages -3) $gappslist $syslist; do
 			boost6071=`getp1 $z`
-  			 if black_func $boost6071; then
+  			 if black_func_1 $boost6071; then
 			 	  print "${YELLOW}[SKIP] •> ${WHITE}${boost6071//com.}"
 			   else	  
-			 	  am force-stop $boost6071 2>/dev/null | >/dev/null && print "${GREEN}[OK] •> ${WHITE}${boost6071//com.}" || print "${RED}[ERROR] •> ${WHITE}${boost6071//com.}"
+			 	  am force-stop $boost6071 >/dev/null 2>&1 && print "${GREEN}[OK] •> ${WHITE}${boost6071//com.}" || print "${RED}[ERROR] •> ${WHITE}${boost6071//com.}"
 			   fi
  		 done
+ 	print
  	print "- ${GREEN}Done${WHITE}"
      sleep 60s & loadings "- Loading ..."
  	done		
 }
-
 
 gaming2(){
 	if [ ! -f $DATA/gaming_mode_2 ]; then
@@ -242,26 +273,29 @@ gaming2(){
 	del $DATA/gaming2_list_apps
 		for z in $(pm list packages -3) $system_list; do
 			boost6071=`getp1 $z`
-			 if black_func $boost6071; then
+			 if black_func_2 $boost6071; then
 			 	  print "${YELLOW}[SKIP] •> ${WHITE}${boost6071//com.}"
 			 else	  
-			 	  pm disable $boost6071 2>/dev/null | >/dev/null && print "${GREEN}[OK] •> ${WHITE}${boost6071//com.}" || print "${GREEN}[ERROR] •> ${WHITE}${boost6071//com.}"
+			 	  pm disable $boost6071 >/dev/null 2>&1  && print "${GREEN}[OK] •> ${WHITE}${boost6071//com.}" || print "${GREEN}[ERROR] •> ${WHITE}${boost6071//com.}"
 			 	  echo "$boost6071" >> $DATA/gaming2_list_apps
 			 fi
  	   done
  	echo actived > $DATA/gaming_mode_2
+ 	print
  	print "- ${GREEN}Done${WHITE}"
- 	sleep 6s
+ 	end_menu
 	elif [ -f $DATA/gaming_mode_2 ]; then
 	clear
-	printmid "${BRED}DisablingGaming Mode 2${NC}$WHITE"
-		 while IFS=' ' read -r gaming2_apps; do
-		 	pm enable $gaming2_apps 2>/dev/null | >/dev/null  && print "${GREEN}[OK] •> ${WHITE}${gaming2_apps//com.}" || print "${RED}[ERROR] •> ${WHITE}${gaming2_apps//com.}"
-		 done < $DATA/gaming2_list_apps
+	printmid "${BRED}Disabling Gaming Mode 2${NC}$WHITE"
+	print
+		 for gaming2_apps in $(cat $DATA/gaming2_list_apps); do
+		 	pm enable $gaming2_apps >/dev/null 2>&1 && print "${GREEN}[OK] •> ${WHITE}${gaming2_apps//com.}" || print "${RED}[ERROR] •> ${WHITE}${gaming2_apps//com.}"
+		 done
 	del $DATA/gaming2_list_apps
 	del $DATA/gaming_mode_2
+	print
 	print "- Done"
-	sleep 6s
+	end_menu
 	fi
 	}
 gaming3(){
@@ -283,56 +317,31 @@ gaming3(){
 		printmid "${BRED}Disabling Gaming Mode 3 ${NC}$GREEN"
 		print
 		sleep 1s
-		while IFS=' ' read -r gaming3_list; do
-			pm enable $gaming3_list 2>/dev/null | >/dev/null && print "${GREEN}[OK] •> ${WHITE}${gaming3_list//com.}" || print "${RED}[ERROR] •> ${WHITE}${gaming3_list//com.}"
-		done < $list_gaming3
+		for gaming3_list in $(cat $list_gaming3); do
+			pm enable $gaming3_list >/dev/null 2>&1 && print "${GREEN}[OK] •> ${WHITE}${gaming3_list//com.}" || print "${RED}[ERROR] •> ${WHITE}${gaming3_list//com.}"
+		done
 		
 		del $DATA/gaming_mode_3
+		print
 		print "${GREEN}- Done"
-		sleep 5s
+		end_menu
 	else
 	clear
 		printmid "${BRED}Enabling Gaming Mode 3${NC}${GREEN}"
 		print
 		sleep 1s
-		while IFS=' ' read -r gaming3_list; do
-			pm disable $gaming3_list 2>/dev/null | >/dev/null && print "${GREEN}[OK] •> ${WHITE}${gaming3_list//com.}" || print "${GREEN}[ERROR] •> ${WHITE}${gaming3_list//com.}"
-		done < $list_gaming3
+		for gaming3_list in $(cat $list_gaming3); do
+			pm disable $gaming3_list >/dev/null 2>&1 && print "${GREEN}[OK] •> ${WHITE}${gaming3_list//com.}" || print "${GREEN}[ERROR] •> ${WHITE}${gaming3_list//com.}"
+		done
 		echo actived > $status_gaming3
+		print
 		print "${GREEN}- Done"
-		sleep 5s
+		end_menu
 	fi
 	
 	}
 	
-gaming(){
-	while true; do
-	if [ ! -f $DATA/black_list_gaming2 ]; then
-		for WAHYU2345 in $LIST_GAME; do
-			echo "$WAHYU2345" >> $DATA/black_list_gaming2
-		done
-	fi
-	
-	clear
-	[ -f $DATA/gaming_mode_2 ] && gaming22="${VIOLET}2.Disable Gaming Mode 2${GREEN}" || gaming22="2.Gaming Mode 2 (Not Recomended)"
-	[ -f $DATA/gaming_mode_3 ] && gaming23="${VIOLET}3.Disable Gaming Mode 3${GREEN}" || gaming23="3.Gaming Mode 3"
-	printmid "${YELLOW}Gaming Mode Select $GREEN"
-	print
-	print "1.Gaming Mode 1"
-	print "$gaming22"
-	print "$gaming23"
-	print "4.Make List Apps"
-	print "5.About"
-	print "6.Exit"
-	print
-	echo -n "Select Gaming Mode : "
-	read gamemodeselect
-	print
-	case $gamemodeselect in
-	1) gaming1 ;;
-	2) gaming2 ;;
-	3) gaming3 ;;
-	4)
+gaming_make_list(){
 	print_title "Select list all"
 	print "1.List apps installed"
 	print "2.List system"
@@ -393,26 +402,54 @@ gaming(){
 		read WAHYU88
 		;;
 	esac
-	;;
-	5)
-	clear
-	printmid "${CYAN}Gaming Mode About${GREEN}"
-	print
+	}
+gaming_edit_config(){
+	while true; do
+		print_title "Edit Config Gaming Mode"
+		print " 1. Edit Config Gaming Mode 1"
+		print " 2. Edit Config Gaming Mode 2"
+		print " 3. Edit Config Gaming Mode 3"
+		print " 4. Exit"
+		SELECT
+		case $PILIH in
+		1)
+		if [ -f $DATA/black_list_gaming1 ]; then
+		am start -a android.intent.action.VIEW -d file://$DATA/black_list_gaming1 -t text/plain > /dev/null 2>&1 
+		fi
+		;;
+		2)
+		if [ -f $DATA/black_list_gaming2 ]; then
+		am start -a android.intent.action.VIEW -d file://$DATA/black_list_gaming2 -t text/plain > /dev/null 2>&1 
+		fi
+		;;
+		3)
+		if [ -f $DATA/gaming_mode_3_list ]; then
+		am start -a android.intent.action.VIEW -d file://$DATA/gaming_mode_3_list -t text/plain > /dev/null 2>&1 
+		fi
+		;;
+		4) break ;;
+		*)    ;;
+		esac
+	done
+	}
+gaming_about(){
+	print_title "${CYAN}Gaming Mode About${GREEN}"
 	print "${YELLOW}1.Gaming Mode 1 $GREEN"
-	print "   • Every 60 seconds application installed on your device will be forced to stop.to add a blacklist app, add it here : ${WHITE}<$DATA/black_list_gaming2>${GREEN}"
+	print "   • Every 60 seconds application installed on your device will be forced to stop.to add a blacklist app, add it here : ${WHITE}<$DATA/black_list_gaming1>${GREEN}"
 	print "${YELLOW}#.Blacklist Gaming Mode 1"
-	for WAHYU6767 in $blacklist_apps $blacklist_system $blacklist_term $(cat $DATA/black_list_gaming2); do
+	for WAHYU6767 in $blacklist_apps $blacklist_system $blacklist_term $(cat $DATA/black_list_gaming1); do
 		print "${CYAN}  • $WAHYU6767"
 	done
 	print "${YELLOW}#.List Apps Gaming Mode 1"
 	for z in $(pm list packages -3) $gappslist $syslist; do
 			boost6071=`getp1 $z`
-  			 if black_func $boost6071; then
+  			 if black_func_1 $boost6071; then
 			 	  shift 0
 			   else	  
 			 	  print "${CYAN}  • $boost6071"
 			   fi
     done
+    
 	print
 	print "${YELLOW}2.Gaming Mode 2 $GREEN"
 	print "   •  Applications installed on your device will be disabled. To add a blacklist app, add it here : ${WHITE}<$DATA/black_list_gaming2>${GREEN}"
@@ -423,7 +460,7 @@ gaming(){
 	print "${YELLOW}#.List Apps Gaming Mode 2"
 	for z in $(pm list packages -3) $gappslist $syslist; do
 			boost6071=`getp1 $z`
-  			 if black_func $boost6071; then
+  			 if black_func_2 $boost6071; then
 			 	  shift 0
 			   else	  
 			 	  print "${CYAN}  • $boost6071"
@@ -433,20 +470,57 @@ gaming(){
     print "${YELLOW}3.Gaming Mode 3 $GREEN"
 	print "   • Listed Applications list ${WHITE}<$DATA/gaming_mode_3_list>${GREEN} will be deactivated."
 	print "${YELLOW}#.List Gaming Mode 3"
-    if [ -f $DATA/gaming_mode_3_list ]; then
+    if [ ! "$(cat $DATA/gaming_mode_3_list)" ]; then
+    	print "$WHITE  • NULL"
+	elif [ -f $DATA/gaming_mode_3_list ]; then
     	for WAHYU90 in $(cat $DATA/gaming_mode_3_list); do
     		print "$CYAN  • $WAHYU90"
     	done
     else
     	print "$WHITE  • NULL"
     fi
+	end_menu
+	}
+gaming(){
+	while true; do
+	if [ ! -f $DATA/black_list_gaming1 ]; then
+		for WAHYU2345 in $LIST_GAME; do
+			echo "$WAHYU2345" >> $DATA/black_list_gaming1
+		done
+	fi
+	if [ ! -f $DATA/black_list_gaming2 ]; then
+		for WAHYU2345 in $LIST_GAME; do
+			echo "$WAHYU2345" >> $DATA/black_list_gaming2
+		done
+	fi
+	if [ ! -f $DATA/gaming_mode_3_list ]; then
+		touch $DATA/gaming_mode_3_list
+	fi
+	
+	clear
+	[ -f $DATA/gaming_mode_2 ] && gaming22="${VIOLET}2.Disable Gaming Mode 2${GREEN}" || gaming22="2.Gaming Mode 2 (Not Recomended)"
+	[ -f $DATA/gaming_mode_3 ] && gaming23="${VIOLET}3.Disable Gaming Mode 3${GREEN}" || gaming23="3.Gaming Mode 3"
+	printmid "${YELLOW}Gaming Mode Select $GREEN"
 	print
-	print "$GREEN 1.Back $YELLOW"
+	print "1.Gaming Mode 1"
+	print "$gaming22"
+	print "$gaming23"
+	print "4.Make List Apps"
+	print "5.Edit config"
+	print "6.About"
+	print "7.Exit"
 	print
-	echo -n " Select Menu : "
-	read asw
-	;;
-	6) break ;;
+	echo -n "Select Gaming Mode : "
+	read gamemodeselect
+	print
+	case $gamemodeselect in
+	1) gaming1 ;;
+	2) gaming2 ;;
+	3) gaming3 ;;
+	4) gaming_make_list ;;
+	5) gaming_edit_config ;;
+	6) gaming_about ;;
+	7) break ;;
 	*) error "Invalid selection"; sleep 2s ;;
 	esac
 	done
@@ -456,19 +530,111 @@ battery(){
 	print "${CYAN}Enabling Battery Saving${NC}$WHITE"
 		for z in $(pm list packages -3) $gappslist $syslist; do
 		boost6071=`getp1 $z`
-   		if black_func $boost6071; then
+   		if black_func_1 $boost6071; then
    		   print "${CYAN}[SKIP] •> ${WHITE}${boost6071//com.}"
    		else   
    		   print "${GREEN}[OK] •> ${WHITE}${boost6071//com.}"
    		   am force-stop $boost6071 2>/dev/null
    		fi   
 		done
+		print
+		print "- Configure GMS"
 		pm disable com.google.android.gms/com.google.android.gms.mdm.receivers.MdmDeviceAdminReceiver >/dev/null
+		
+		print
+		print "${YELLOW} Configure CPU${GREEN}"
+		print "- Boost Cluster 1"
+		local cluster1=/sys/devices/system/cpu/cpu0/cpufreq
+		if grep -q powersave $cluster1/scaling_available_governors 2>/dev/null; then
+			print "• Backuping"
+			cat "$cluster1/scaling_governor" > $DATA/battery-saver-cluster1-governors
+			print "• Set governor"
+			echo powersave > $cluster1/scaling_governor
+		fi
+		if [ $(cat $cluster1/scaling_max_freq) -eq $(cat $cluster1/scaling_max_freq) ]; then
+			print "• Backuping"
+			cat "$cluster1/scaling_max_freq" > $DATA/battery-saver-cluster1-freq
+			print "• Set freq"
+			local setpowersave=`cat $cluster1/scaling_available_frequencies | tail -n 1 | tr -s ' ' | cut -d ' ' -f2`
+			echo "$setpowersave" > $cluster1/scaling_max_freq
+		fi
+		print "- Boost Cluster 2"
+		local cluster2=/sys/devices/system/cpu/cpu7/cpufreq
+		if grep -q powersave $cluster2/scaling_available_governors 2>/dev/null; then
+			print "• Backuping"
+			cat "$cluster2/scaling_governor" > $DATA/battery-saver-cluster2-governors
+			print "• Set governor"
+			echo powersave > $cluster2/scaling_governor
+		fi
+		if [ $(cat $cluster2/scaling_max_freq) -eq $(cat $cluster2/scaling_max_freq) ]; then
+			print "• Backuping"
+			cat "$cluster2/scaling_max_freq" > $DATA/battery-saver-cluster2-freq
+			print "• Set freq"
+			local setpowersave=`cat $cluster2/scaling_available_frequencies | tail -n 1 | tr -s ' ' | cut -d ' ' -f2`
+			echo "$setpowersave" > $cluster2/scaling_max_freq
+		fi
+		print "${YELLOW} Configure GPU${GREEN}"
+		local cluster1=/sys/kernel/gpu
+		if grep -q powersave $cluster1/gpu_available_governor 2>/dev/null ; then
+			print "• Backuping"
+			cat $cluster1/gpu_governor > $DATA/battery-saver-gpu-governor
+			print "• Set governor"
+			echo powersave > $cluster1/gpu_governor
+		fi
+		if [ $(cat $cluster1/gpu_max_clock) -eq $(cat $cluster1/gpu_max_clock) ]; then
+			print "• Backuping"
+			cat $cluster1/gpu_max_clock > $DATA/battery-saver-gpu-freq
+			print "• Set freq"
+			local setpowersave=`cat $cluster1/gpu_available_governor | tail -n 1 | tr -s ' ' | cut -d ' ' -f2`
+			echo "$setpowersave" > $cluster1/gpu_max_clock
+		fi
+		
 		print "actived" > $DATA/battery_saver
 		print "- Done ";
+		
+		
 	elif [ -f $DATA/battery_saver ]; then
 		print "${CYAN}Disabling Battery Saving${NC}$WHITE"
+		print
+		print "- Restoring Configure GMS"
 		pm enable com.google.android.gms/com.google.android.gms.mdm.receivers.MdmDeviceAdminReceiver >/dev/null
+		
+		
+		local cluster1=/sys/devices/system/cpu/cpu0/cpufreq
+		if [ -f $DATA/battery-saver-cluster1-governors ]; then
+			print "- Restoring cpu cluster 1 governor"
+			cat $DATA/battery-saver-cluster1-governors > $cluster1/scaling_governor
+			del $DATA/battery-saver-cluster1-governors
+		fi
+		if [ -f $DATA/battery-saver-cluster1-freq ]; then
+			print "- Restoring cpu cluster 1 freq"
+			cat $DATA/battery-saver-cluster1-freq  > $cluster1/scaling_max_freq
+			del $DATA/battery-saver-cluster1-freq
+		fi
+		
+		local cluster2=/sys/devices/system/cpu/cpu7/cpufreq
+		if [ -f $DATA/battery-saver-cluster2-governors ]; then
+			print "- Restoring cpu cluster 2 governor"
+			cat $DATA/battery-saver-cluster2-governors > $cluster2/scaling_governor
+			del $DATA/battery-saver-cluster2-governors
+		fi
+		if [ -f $DATA/battery-saver-cluster2-freq ]; then
+			print "- Restoring cpu cluster 2 freq"
+			cat $DATA/battery-saver-cluster2-freq > $cluster2/scaling_max_freq
+			del $DATA/battery-saver-cluster2-freq
+		fi
+		
+		local cluster1=/sys/kernel/gpu
+		if [ -f $DATA/battery-saver-gpu-governor ]; then
+			print "- Restoring gpu governor"
+			cat $DATA/battery-saver-gpu-governor> $cluster1/gpu_governor
+			del $DATA/battery-saver-gpu-governor
+		fi
+		if [ -f $DATA/battery-saver-gpu-freq ]; then
+			print "- Restoring gpu freq"
+			cat $DATA/battery-saver-gpu-freq > $cluster1/gpu_max_clock
+			del $DATA/battery-saver-gpu-freq
+		fi
 		del $DATA/battery_saver
 		print "- Done"
 	fi
@@ -695,17 +861,144 @@ testping(){
 	}
 	
 meminfo(){
+	print "${BLUE}____________________________________________${GREEN}"
+	print
 	print "RAM Free = $(free -h | grep Mem | tr -s ' ' | cut -d' ' -f4)"
 	print "RAM Used = $(free -h | grep Mem | tr -s ' ' | cut -d' ' -f3)"
 	print "RAM Total = $(free -h | grep Mem | tr -s ' ' | cut -d' ' -f2)"
 	print
-	for W897 in /data /system /product /system_ext /vendor /cache /dev /; do
+	print "${BLUE}____________________________________________${GREEN}"
+	print
+	for W897 in /data /sdcard /system /product /system_ext /vendor /cache /dev /persist /mnt /; do
 		if [ -d $W897 ]; then
-		print "$W897 Free  = $(df -h $W897 | tail -n 1 | tr -s ' ' | cut -d' ' -f4)"
-		print "$W897 Used  = $(df -h $W897 | tail -n 1 | tr -s ' ' | cut -d' ' -f3)"
-		print "$W897 Total = $(df -h $W897 | tail -n 1 | tr -s ' ' | cut -d' ' -f2)"
+		local FILESYSTEM=`df -h $W897 | tail -n 1 | tr -s ' ' | cut -d' ' -f1`
+		print " ${YELLOW}Partition  = $W897${GREEN}"
+		print " Filesystem = $FILESYSTEM"
+		print " Mounted on = $(df -h $W897 | tail -n 1 | tr -s ' ' | cut -d' ' -f6)"
+		print " Free       = $(df -h $W897 | tail -n 1 | tr -s ' ' | cut -d' ' -f4)"
+		print " Usage      = $(df -h $W897 | tail -n 1 | tr -s ' ' | cut -d' ' -f3)"
+		print " Total      = $(df -h $W897 | tail -n 1 | tr -s ' ' | cut -d' ' -f2)"
+		print " Used %     = $(df -h $W897 | tail -n 1 | tr -s ' ' | cut -d' ' -f5)"
+		print " Type       = $(mount | grep $FILESYSTEM | tail -n 1 | tr -s ' ' | cut -d' ' -f5)"
+		print "${BLUE}____________________________________________${GREEN}"
 		print
 		fi
+	done
+	}
+TWEAKS_boost_cpu(){
+	print_title "Boost CPU"
+	print "- Boost Cluster 1"
+	local cluster1=/sys/devices/system/cpu/cpu0/cpufreq
+	if grep -q performance $cluster1/scaling_available_governors 2>/dev/null; then
+		print "• Set governor"
+		echo performance > $cluster1/scaling_governor
+	fi
+	if [ $(cat $cluster1/scaling_max_freq) -eq $(cat $cluster1/scaling_max_freq) ]; then
+		print "• Set freq"
+		echo "$(cat $cluster1/scaling_max_freq)" > $cluster1/scaling_min_freq
+	fi
+	print "- Boost Cluster 2"
+	local cluster2=/sys/devices/system/cpu/cpu7/cpufreq
+	if grep -q performance $cluster2/scaling_available_governor 2>/dev/null; then
+		print "• Set governor"
+		echo performance > $cluster2/scaling_governor
+	fi
+	if [ $(cat $cluster2/scaling_max_freq) -eq $(cat $cluster2/scaling_max_freq) ]; then
+		print "• Set freq"
+		echo "$(cat $cluster2/scaling_max_freq)" > $cluster2/scaling_min_freq
+	fi
+	print
+	print "- Done"
+	print
+	print "${YELLOW}  Note : maybe your device will be hotter and consume a lot of battery consumption.  Reboot if you want to disable it :)"
+	end_menu
+	}
+TWEAKS_boost_gpu(){
+		print_title "Boost GPU"
+		print "- Boost"
+		local cluster1=/sys/kernel/gpu
+		if grep -q performance $cluster1/gpu_available_governor 2>/dev/null ; then
+			print "• Set governor"
+			echo performance > $cluster1/gpu_governor
+		fi
+		if [ $(cat $cluster1/gpu_max_clock) -eq $(cat $cluster1/gpu_max_clock) ]; then
+			print "• Set freq"
+			echo "$(cat $cluster1/gpu_max_clock)" > $cluster1/gpu_min_clock
+		fi
+		print
+		print "- Done"
+		print
+		print "${YELLOW}  Note : maybe your device will be hotter and consume a lot of battery consumption.  Reboot if you want to disable it :)"
+		end_menu
+	}
+TWEAKS(){
+	while true; do
+		print_title "Tweaks"
+		print "1. Boost CPU"
+		print "2. Boost GPU"
+		print "3. Exit"
+		SELECT
+		case $PILIH in
+		1)
+		TWEAKS_boost_cpu
+		;;
+		2)
+		TWEAKS_boost_gpu
+		;;
+		3 | exit)
+		break
+		;;
+		*) error "Invalid selection" ; sleep 2s ;;
+		esac
+	done
+	}
+SETTINGS(){
+	while true; do
+		print_title "Settings"
+		if [ "$(settings get global development_settings_enabled)" -eq 1 ]; then
+			print_true "1. Mode development settings" "ON"
+		else
+			print_false "1. Mode development settings" "OFF"
+		fi
+		if [ "$(settings get system show_touches)" -eq 1 ]; then
+			print_true "2. Show touches" "ON"
+		else
+			print_false "2. Show touches" "OFF"
+		fi
+		if [ "$(settings get global zram_enabled)" -eq 1 ]; then
+			print_true "3. Zram" "ON"
+		else
+			print_false "3. Zram" "OFF"
+		fi
+		print "4. Exit"
+		SELECT
+		case $PILIH in
+		1)
+		if [ "$(settings get global development_settings_enabled)" -eq 1 ]; then
+			settings put global development_settings_enabled 0
+		else
+			settings put global development_settings_enabled 1
+		fi
+		;;
+		2)
+			if [ "$(settings get system show_touches)" -eq 1 ]; then
+				settings put system show_touches 0
+			else
+				settings put system show_touches 1
+			fi
+		;;
+		3)
+			if [ "$(settings get global zram_enabled)" -eq 1 ]; then
+				settings put global zram_enabled 0
+			else
+				settings put global zram_enabled 1
+			fi
+		;;
+		4)
+		break
+		;;
+		*) error "Invalid selection" ; sleep 2s ;;
+		esac
 	done
 	}
 about(){
@@ -719,6 +1012,8 @@ print "${YELLOW}"
 print " Github   : https://github.com/litegapps/litegapps-controller"
 print " Telegram : https://t.me/litegapps"
 print " Youtube  : https://youtube.com/c/wahyu6070"
+print " Website  : https://litegapps.github.io"
+print " Paypal   : https://paypal.me/wahyu6070"
 print " $GREEN"
 }
 
@@ -729,7 +1024,7 @@ menu(){
 	print
 	print "${CYAN}1.Back To Menu      ${GREEN}2.Refresh"
 	print
-	echo -n "${WHITE}Select menu : ${NC}$GREEN"
+	echo -n "${WHITE}Select menu : ${VIOLET}"
 	read anjay
 	if [ $anjay -eq 1 ]; then
 	break
@@ -788,7 +1083,7 @@ case $pilih in
 6) menu meminfo "Memory Info" ;;
 7) menu device "Device info" ;;
 8) addon ;;
-9) tweaks ;;
+9) TWEAKS ;;
 10) SETTINGS ;;
 11 | about) menu about About ;;
 12 | exit | e)  
