@@ -43,6 +43,53 @@ error() {
 	print "${RED}ERROR :  ${WHITE}$1${GREEN}"
 	print
 	}
+print_title(){
+	clear
+	printmid "${YELLOW}$1${GREEN}"
+	print " "
+	}
+
+spinner() {
+  set +x
+  PID=$!
+  h=0; anim='-\|/';
+  while [ -d /proc/$PID ]; do
+    h=$(((h+1)%4))
+    sleep 0.02
+    printf "\r${@} [${anim:$h:1}]"
+  done
+  set -x 2>>$VERLOG
+}
+end_menu(){
+	print " "
+	print "${YELLOW}1. Back"
+	print " "
+	echo -n "${VIOLET} Select Menu : ${CYAN}"
+	read lol
+	}
+SELECT(){
+	print
+	echo -n "${YELLOW}Choose one of the numbers : ${CYAN}"
+	read PILIH
+	}
+print_true(){
+	print "${GREEN}${1} = ${GREEN}${2}${GREEN}"
+	}
+print_false(){
+	print "${GREEN}${1} = ${WHITE}${2}${GREEN}"
+	}
+#▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+# Mount
+#▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+#mount
+clear
+print "- Mounting Partition"
+if mount -o rw,remount / ; then
+echo
+else
+abort "- Abort mounting Partition"
+sleep 3s
+fi
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #dec
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -59,7 +106,8 @@ esac
 
 base=/data/adb/litegapps_controller
 BASE=$base
-BIN=$BASE/bin
+BIN=$BASE/bin/$ARCH
+chmod -R 755 $BIN
 #system
 SYSTEM_DIR=$SYSDIR
 API=`getprop ro.build.version.sdk`
@@ -76,10 +124,19 @@ if [ "$ABI2" = "x86" ]; then ARCH=x86; ARCH32=x86; fi;
 if [ "$ABILONG" = "arm64-v8a" ]; then ARCH=arm64; ARCH32=arm; IS64BIT=true; fi;
 if [ "$ABILONG" = "x86_64" ]; then ARCH=x64; ARCH32=x86; IS64BIT=true; fi;
 
-if [ -f /data/adb/modules/litegapps/module.prop ]; then
+MAGISK_MOD=/data/adb/modules/litegapps
+if [ -f $MAGISK_MOD/module.prop ] && [ -f $MAGISK_MOD/magisk_mode_force ]; then
+MODE_INSTALL=MAGISK
+MODE_DESK="Magisk Module (force)"
+SYSTEM_INSTALL=/data/adb/modules/litegapps/system
+elif [ -f $MAGISK_MOD/module.prop ] && [ ! -f $MAGISK_MOD/android_system_force ]; then
 MODE_INSTALL=MAGISK
 MODE_DESK="Magisk Module"
 SYSTEM_INSTALL=/data/adb/modules/litegapps/system
+elif [ -f $MAGISK_MOD/android_system_force ]; then
+MODE_DESK="Android system (Force)"
+MODE_INSTALL=REGULER
+SYSTEM_INSTALL=/system
 else
 MODE_DESK="Android system"
 MODE_INSTALL=REGULER
@@ -114,6 +171,24 @@ menu_end(){
 	esac
 	}
 
+end_menu(){
+	print " "
+	print "${YELLOW}1. Back"
+	print " "
+	echo -n "${VIOLET} Select Menu : ${CYAN}"
+	read lol
+	}
+SELECT(){
+	print
+	echo -n "${YELLOW}Choose one of the numbers : ${CYAN}"
+	read PILIH
+	}
+print_true(){
+	print "${GREEN}${1} = ${GREEN}${2}${GREEN}"
+	}
+print_false(){
+	print "${GREEN}${1} = ${WHITE}${2}${GREEN}"
+	}
 install_package(){
 	local input="$1"
 	rm -rf $base/tmp
@@ -134,15 +209,12 @@ install_package(){
 	name_package_module=`getp package.module $base/tmp/litegapps-prop`
 	MOD_MODULE=$BASE/modules/$name_package_module
 	
-	if [ -f $base/tmp/litegapps-install.sh ]; then
-		chmod 755 $base/tmp/litegapps-install.sh
-		. $base/tmp/litegapps-install.sh
-	elif [ -f $base/tmp/package-install.sh ]; then
+	if [ -f $base/tmp/package-install.sh ]; then
 		chmod 755 $base/tmp/package-install.sh
 		. $base/tmp/package-install.sh
 	else
 		print " "
-		print "${R} this package litegapps-install.sh not found ! $G"
+		print "${R} this package package-install.sh not found ! $G"
 	fi
 	[ ! -d $base/modules ] && mkdir -p $base/modules
 	[ -d $MOD_MODULE ] && rm -rf $MOD_MODULE
@@ -150,8 +222,6 @@ install_package(){
 	list_move_package="
 	litegapps-prop 
 	litegapps-list
-	litegapps-uninstall.sh
-	litegapps-restore.sh
 	package-uninstall.sh
 	package-restore.sh
 	module.prop
@@ -168,12 +238,10 @@ install_package(){
 	rm -rf $base/tmp
 	}
 	
-	
-	
 download_file(){
 url=$2
 name=$1
-if [ -f $base/modules/$name/litegapps-uninstall.sh ] || [ -f $base/modules/$name/package-uninstall.sh ]; then
+if [ -f $base/modules/$name/package-uninstall.sh ]; then
 	while true; do
 	clear
 	printmid "${C}Select mode${G}"
@@ -211,9 +279,9 @@ if [ "$modeselect" = "install" ]; then
 	print
 	[ -d $BASE/download ] && rm -rf $BASE/download
 	test ! -d $BASE/download && mkdir -p $BASE/download
-	print "- Download package"
+	print "- Download Package $Y"
 	#DEV_MODE
-	$BIN/curl -L -o $BASE/download/$name.zip $url
+	$BIN/curl --progress-bar -L -o $BASE/download/$name.zip $url
 	
 	if [ $? -eq 0 ]; then
 		print "${WHITE}- Downloading status : ${G}[OK]${WHITE}"
@@ -231,10 +299,6 @@ elif [ "$modeselect" = "uninstall" ]; then
 	clear
 	printmid "${C}Uninstall Packages${G}"
 	print
-	if [ -f $BASE/modules/$name/litegapps-uninstall.sh ]; then
-		chmod 755 $BASE/modules/$name/litegapps-uninstall.sh
-		. $BASE/modules/$name/litegapps-uninstall.sh
-	fi
 	if [ -f $BASE/modules/$name/package-uninstall.sh ]; then
 		chmod 755 $BASE/modules/$name/package-uninstall.sh
 		. $BASE/modules/$name/package-uninstall.sh
@@ -246,98 +310,296 @@ fi
 menu_end
 }
 
-
 #################################################
 #Menu functions
 #################################################
+DOWNLOAD_CORE(){
+	while true; do
+	local SERVER=https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/core
+	print_title "Download Addon Core"
+	print "1. Carrier Services"
+	print "2. Carrier Setup"
+	print "3. Common"
+	print "4. Config Updater"
+	print "5. Google Play Services"
+	print "6. Google Backup Transport"
+	print "7. Google Contacts Sync Adapter"
+	print "8. Google Ext Shared"
+	print "9. Google One Time Initializer"
+	print "10. Google Partner Setup"
+	print "11. Google Restore"
+	print "12. Google Services Framework"
+	print "13. Play Store"
+	print "14. Pixel Setup Wizard"
+	print "15. Setup Wizard"
+	print "16. Exit"
+	SELECT
+	case $PILIH in
+	1) download_file CarrierServices $SERVER/CarrierServices.zip/download
+	;;
+	2) download_file CarrierSetup $SERVER/CarrierSetup.zip/download
+	;;
+	3) download_file Common $SERVER/Common.zip/download
+	;;
+	4) download_file ConfigUpdater $SERVER/ConfigUpdater.zip/download
+	;;
+	5) download_file GmsCore $SERVER/GmsCore.zip/download
+	;;
+	6) download_file GoogleBackupTransport $SERVER/GoogleBackupTransport.zip/download
+	;;
+	7) download_file GoogleContactsSyncAdapter Adapter $SERVER/GoogleContactsSyncAdapter.zip/download
+	;;
+	8) download_file GoogleExtShared $SERVER/GoogleExtShared.zip/download
+	;; 
+	9) download_file GoogleOneTimeInitializer $SERVER/GoogleOneTimeInitializer.zip/download
+	;;
+	10) download_file GooglePartnerSetup $SERVER/GooglePartnerSetup.zip/download
+	;;
+	11) download_file GoogleRestore $SERVER/GoogleRestore.zip/download
+	;;
+	12) download_file GoogleServicesFramework $SERVER/GoogleServicesFramework.zip/download
+	;;
+	13) download_file Phonesky $SERVER/Phonesky.zip/download
+	;;
+	14) download_file PixelSetupWizard $SERVER/PixelSetupWizard.zip/download
+	;;
+	15) download_file SetupWizard $SERVER/SetupWizard.zip/download
+	;;
+	16 | exit | e)
+	break
+	;;
+	*)
+	error "Please select number in menu list"
+	sleep 2s
+	;;
+	esac
+	done
+	}
+DOWNLOAD_GAPPS(){
+	while true; do
+	local SERVER=https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/gapps
+	print_title "Download Addon Gapps"
+	print "1. Android Auto"
+	print "2. AR Core"
+	print "3. Chrome"
+	print "4. Google Clock"
+	print "5. Device Policy"
+	print "6. Dream Liner"
+	print "7. Drive"
+	print "8. Files"
+	print "9. Gmail"
+	print "10. Google Asistant"
+	print "11. Google Calculator"
+	print "12. Google Calender"
+	print "13. Google Contact"
+	print "14. Google Dialer"
+	print "15. Google Keyboard"
+	print "16. Google TTS"
+	print "17. Google Web View"
+	print "18. Google Keep"
+	print "19. Location History"
+	print "20. Google Maps"
+	print "21. Markup Google"
+	print "22. Google Messenger"
+	print "23. Google Photos"
+	print "24. Pixel Launcher"
+	print "25. Pixel Live Wallpaper"
+	print "26. Google Play Games"
+	print "27. Google Recorder"
+	print "28. Sound Picker"
+	print "29. Scribe"
+	print "30. Talkback"
+	print "31. Turbo"
+	print "32. Tycho"
+	print "33. Google Search"
+	print "34. Google Videos"
+	print "35. Google Wallpaper Picker"
+	print "36. Wellbeing"
+	print "37. Youtube"
+	print "38. Youtube Music"
+	print "39. Exit"
+	SELECT
+	case $PILIH in
+	1) download_file AndroidAuto $SERVER/AndroidAuto.zip/download
+	;;
+	2) download_file Arcore $SERVER/Arcore.zip/download
+	;;
+	3) download_file Chrome $SERVER/Chrome.zip/download
+	;;
+	4) download_file DeskClockGoogle $SERVER/DeskClockGoogle.zip/download
+	;;
+	5) download_file DevicePolicy $SERVER/DevicePolicy.zip/download
+	;;
+	6) download_file DreamLiner $SERVER/DreamLiner.zip/download
+	;;
+	7) download_file Drive Adapter $SERVER/Drive.zip/download
+	;;
+	8) download_file Files $SERVER/Files.zip/download
+	;; 
+	9) download_file Gmail $SERVER/Gmail.zip/download
+	;;
+	10) download_file GoogleAssistant $SERVER/GoogleAssistant.zip/download
+	;;
+	11) download_file GoogleCalculator $SERVER/GoogleCalculator.zip/download
+	;;
+	12) download_file GoogleCalendar $SERVER/GoogleCalendar.zip/download
+	;;
+	13) download_file GoogleContacts $SERVER/GoogleContacts.zip/download
+	;;
+	14) download_file GoogleDialer $SERVER/GoogleDialer.zip/download
+	;;
+	15) download_file GoogleKeyboard $SERVER/GoogleKeyboard.zip/download
+	;;
+	16) download_file GoogleTTS $SERVER/GoogleTTS.zip/download
+	;;
+	17) download_file GoogleWebView $SERVER/GoogleWebView.zip/download
+	;;
+	18) download_file Keep $SERVER/Keep.zip/download
+	;;
+	19) download_file LocationHistory $SERVER/LocationHistory.zip/download
+	;;
+	20) download_file Maps $SERVER/Maps.zip/download
+	;;
+	21) download_file MarkupGoogle $SERVER/MarkupGoogle.zip/download
+	;;
+	22) download_file Messaging Adapter $SERVER/Messaging.zip/download
+	;;
+	23) download_file Photos $SERVER/Photos.zip/download
+	;; 
+	24) download_file PixelLauncher $SERVER/PixelLauncher.zip/download
+	;;
+	25) download_file PixelLiveWallpaper $SERVER/PixelLiveWallpaper.zip/download
+	;;
+	26) download_file PlayGames $SERVER/PlayGames.zip/download
+	;;
+	27) download_file Recorder $SERVER/Recorder.zip/download
+	;;
+	28) download_file SoundPicker $SERVER/SoundPicker.zip/download
+	;;
+	29) download_file Sribe $SERVER/Sribe.zip/download
+	;;
+	30) download_file Talkback $SERVER/Talkback.zip/download
+	;;
+	31) download_file Turbo Adapter $SERVER/Turbo.zip/download
+	;;
+	32) download_file Tycho $SERVER/Tycho.zip/download
+	;; 
+	33) download_file Velvet $SERVER/Velvet.zip/download
+	;;
+	34) download_file Videos $SERVER/Videos.zip/download
+	;;
+	35) download_file WallpaperPicker $SERVER/WallpaperPicker.zip/download
+	;;
+	36) download_file Wellbeing $SERVER/Wellbeing.zip/download
+	;;
+	37) download_file Youtube $SERVER/Youtube.zip/download
+	;;
+	38) download_file YoutubeMusic.zip $SERVER/YoutubeMusic.zip/download
+	;;
+	39 | exit | e)
+	
+	break
+	;;
+	*)
+	error "Please select number in menu list"
+	sleep 2s
+	;;
+	esac
+	done
+	}
+	
+DOWNLOAD_GO(){
+	while true; do
+	local SERVER=https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/go
+	print_title "Download Addon Google Go"
+	print "1. Google Asistant Go"
+	print "2. Gallery Go"
+	print "3. Gmail Go"
+	print "4. Maps Go"
+	print "5. Navigation Go"
+	print "6. Google Search Go"
+	print "7. Exit"
+	SELECT
+	case $PILIH in
+	1) download_file AssistantGo $SERVER/AssistantGo.zip/download
+	;;
+	2) download_file GalleryGo $SERVER/GalleryGo.zip/download
+	;;
+	3) download_file GmailGo $SERVER/GmailGo.zip/download
+	;;
+	4) download_file MapsGo $SERVER/MapsGo.zip/download
+	;;
+	5) download_file NavigationGo $SERVER/NavigationGo.zip/download
+	;;
+	6) download_file GoogleSearchGo $SERVER/GoogleSearchGo.zip/download
+	;;
+	7 | exit | e)
+	
+	break
+	;;
+	*)
+	error "Please select number in menu list"
+	sleep 2s
+	;;
+	esac
+	done
+	}
+DOWNLOAD_ETC(){
+	while true; do
+	local SERVER=https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/etc
+	print_title "Download Addon Google Etc"
+	print "1. Termux"
+	print "2. Snaptube"
+	print "3. Mixplorer"
+	print "4. Vanced Manager"
+	print "5. Exit"
+	SELECT
+	case $PILIH in
+	1) download_file Termux $SERVER/Termux.zip/download
+	;;
+	2) download_file Snaptube $SERVER/Snaptube.zip/download
+	;;
+	3) download_file Mixplorer $SERVER/Mixplorer.zip/download
+	;;
+	4) download_file VancedManager $SERVER/VancedManager.zip/download
+	;;
+	5 | exit | e)
+	
+	break
+	;;
+	*)
+	error "Please select number in menu list"
+	sleep 2s
+	;;
+	esac
+	done
+	}
 menu_download(){
 	while true; do
-	clear
-	printmid "${C}Packages List${G}"
-	print
-	print "1.Android Web View"
-	print "2.Chrome"
-	print "3.Etc,framework"
-	print "4.Gmail"
-	print "5.Gms Core"
-	print "6.Google Calendar Sync Adapter"
-	print "7.Google Contacts Sync Adapter"
-	print "8.Google Search"
-	print "9.Google Services Framework"
-	print "10.Google TTS"
-	print "11.Location History"
-	print "12.Maps"
-	print "13.Photos"
-	print "14.Play Store"
-	print "15.Setup Wizard"
-	print "16.Videos"
-	print "17.Wellbeing"
-	print "18.Youtube"
-	print "19.Youtube Music"
-	print "20.About"
-	print "21.Exit"
+	print_title "Addon Download List"
+	print "1. Core"
+	print "2. Google Apps"
+	print "3. Google Go"
+	print "4. Etc"
+	print "5. About"
+	print "6. Exit"
 	print
 	echo -n " Select List Menu : ${V}"
 	read dmenu
 	case $dmenu in
 	1)
-	download_file AndroidWebView https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/AndroidWebView.zip/download
+	DOWNLOAD_CORE
 	;;
 	2)
-	download_file Chrome https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Chrome.zip/download
+	DOWNLOAD_GAPPS
 	;;
 	3)
-	download_file Etc https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Etc.zip/download
+	DOWNLOAD_GO
 	;;
 	4)
-	download_file Gmail https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Gmail.zip/download
+	DOWNLOAD_ETC
 	;;
 	5)
-	download_file GmsCore https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GmsCore.zip/download
-	;;
-	6)
-	download_file GoogleCalendarSyncAdapter https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GoogleCalendarSyncAdapter.zip/download
-	;;
-	7)
-	download_file GoogleContactsSyncAdapter https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GoogleContactsSyncAdapter.zip/download
-	;;
-	8)
-	download_file GoogleSearch https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GoogleSearch.zip/download
-	;;
-	9)
-	download_file GoogleServicesFramework https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/GoogleServicesFramework.zip/download
-	;;
-	10)
-	download_file GoogleTTS https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Chrome.zip/download
-	;;
-	11)
-	download_file LocationHistory https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/LocationHistory.zip/download
-	;;
-	12)
-	download_file Maps https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Maps.zip/download
-	;;
-	13)
-	download_file Photos https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Photos.zip/download
-	;;
-	14)
-	download_file PlayStore https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/PlayStore.zip/download
-	;;
-	15)
-	download_file SetupWizard https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/SetupWizard.zip/download
-	;;
-	16)
-	download_file Videos https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Videos.zip/download
-	;;
-	17)
-	download_file Wellbeing https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Wellbeing.zip/download
-	;;
-	18)
-	download_file Youtube https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/Youtube.zip/download
-	;;
-	19)
-	download_file YoutubeMusic https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/YoutubeMusic.zip/download
-	;;
-	20)
 	clear
 	printmid "${C}About${G}"
 	print
@@ -351,16 +613,18 @@ menu_download(){
 	print
 	menu_end
 	;;
-	21)
+	6)
 	break
 	;;
 	*)
 	error "Please select number in menu list" 
+	sleep 2s
 	;;
 	esac
 	done
 	
 	}
+	
 menu_tweaks(){
 	while true; do
 	clear
@@ -440,8 +704,9 @@ menu_zip_install(){
 clear
 printmid "${C}Package ZIP install${G}"
 print " "
-dirpackage=/data/media/0/Android/litegapps/package
+dirpackage=/sdcard/Android/litegapps/package
 test ! -d $dirpackage && cdir $dirpackage
+[ "$(ls -A $dirpackage)" ] || print "${R}! Please Add Package in ${WHITE}<$dirpackage>${G}"
 numzip=0
 for IZIP in $(ls -1 $dirpackage); do
 	if [ -f $dirpackage/$IZIP ]; then
@@ -457,20 +722,8 @@ print
 print "${Y} $numzip ${G}Package Installed"
 menu_end
 }
-
-TOOLS(){
-	while true; do
-	clear
-	printmid "${C}Tools${G}"
-	print
-	print "1. Clear data Gms and PlayStore"
-	print "2. Clear data litegapps"
-	print "3. Back"
-	print
-	echo -n "${C}Select Menu : ${G}"
-	read INPUT_TOOLS
-	case $INPUT_TOOLS in
-	1)
+TOOLS_GMS_PS(){
+	print_title "Clear data GMS And Play Store"
 	local LIST="
 	com.android.vending
 	com.google.android.gms
@@ -484,17 +737,82 @@ TOOLS(){
 		fi
 	done
 	sleep 3s
-	;;
+	end_menu
+	}
+TOOLS_FORCE_MAGISK(){
+	local MAGISK_DIR=$MAGISK_MOD
+	print_title "Force Magisk Module Mode"
+	if [ -f $MAGISK_DIR/module.prop ] && [ "$(ls -A $MAGISK_DIR/system)" ]; then
+		print "# already in magisk module mode"
+		print " Name : $(getp name $MAGISK_DIR/module.prop)"
+	elif [ -f $MAGISK_DIR/module.prop ] && [ -f $MAGISK_DIR/magisk_mode_force ]; then
+		print "# already in magisk module mode (force)"
+		print " Name : $(getp name $MAGISK_DIR/module.prop)"
+	else 
+		[ -d $MAGISK_DIR ] && cdir $MAGISK_DIR
+		[ -f $MAGISK_DIR/android_system_force ] && del $MAGISK_DIR/android_system_force
+		print "- Make Magisk Module"
+		echo "id=litegapps" > $MAGISK_DIR/module.prop
+		echo "name=LiteGapps Force Mode" >> $MAGISK_DIR/module.prop
+		echo "version=v0.1" >> $MAGISK_DIR/module.prop
+		echo "versionCode=1" >> $MAGISK_DIR/module.prop
+		echo "date=14-11-2020" >> $MAGISK_DIR/module.prop
+		echo "author=LiteGapps_Controller" >> $MAGISK_DIR/module.prop
+		echo "description=magisk module mode force" >> $MAGISK_DIR/module.prop
+		[ ! -d $MAGISK_DIR/system ] && cdir $MAGISK_DIR/system
+		touch $MAGISK_DIR/magisk_mode_force
+		print "- Done"
+		print "- Please Restart Litegapps Controller"
+	fi
+	end_menu
+	}
+TOOLS_FORCE_ANDROID_SYSTEM(){
+	print_title "Force Android System Mode"
+	if [ -f $MAGISK_MOD/android_system_force ]; then
+		print "- Disable Force Android System"
+		del $MAGISK_MOD/android_system_force
+		print "- Done"
+		print "- Please Restart Litegapps Controller"
+	else
+		print "- Enable Force Android System"
+		touch $MAGISK_MOD/android_system_force
+		if [ -f $MAGISK_MOD/magisk_mode_force ]; then
+			print "- Disabling Magisk Mode Force"
+			del $MAGISK_MOD/magisk_mode_force
+		fi
+		print "- Done"
+		print "- Please Restart Litegapps Controller"
+	fi
+	end_menu
+	}
+TOOLS(){
+	while true; do
+	clear
+	printmid "${C}Tools${G}"
+	print
+	print "1. Clear data Gms and PlayStore"
+	print "2. Clear data litegapps"
+	print "3. Force Magisk Module Mode"
+	print "4. Force Android System Mode"
+	print "5. Back"
+	print
+	echo -n "${C}Select Menu : ${G}"
+	read INPUT_TOOLS
+	case $INPUT_TOOLS in
+	1) TOOLS_GMS_PS ;;
 	2)
+	print_title "Clear data all litegapps"
 	for W12 in /data/kopi /data/litegapps /sdcard/Android/litegapps; do
 		if [ -d $W12 ]; then
 			print "- Cleaning $W12"
 			rm -rf $W12
 		fi
 	done
-	sleep 3s
+	end_menu
 	;;
-	3) break ;;
+	3) TOOLS_FORCE_MAGISK ;;
+	4) TOOLS_FORCE_ANDROID_SYSTEM ;;
+	5 | b | back | exit | e) break ;;
 	*)
 	error "Please select Menu"
 	sleep 2s
@@ -593,13 +911,17 @@ while true; do
 clear
 printmid "${C}Litegapps Menu${G}"
 print
-print " ${WHITE} Mode : ${Y}$MODE_DESK ${G}"
-touch /system/wahyu6070 2>/dev/null
-if [ -f /system/wahyu6070 ]; then
-rm -rf /system/wahyu6070
-else
-print "$R ERROR : your system cannot be modified !!! $G"
-fi
+print " ${WHITE}Mode : ${Y}$MODE_DESK ${G}"
+for W900 in system product system_ext; do
+	if [ -d $W900 ]; then
+		touch $W900/wahyu6070 2>/dev/null
+		if [ -f $W900/wahyu6070 ]; then
+			del $W900/wahyu6070
+		else
+			print "$R ERROR : your <$W900> cannot be modified !!! $G"
+		fi
+	fi
+done
 print
 print "1.Download package"
 print "2.Fix"
@@ -639,7 +961,7 @@ read menu77
 		break
 		;;
 		*)
-		error "please select 1-9 !"
+		error "please select 1-8 !"
 		sleep 2s
 		;;
 		esac

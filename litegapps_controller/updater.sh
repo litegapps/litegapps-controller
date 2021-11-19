@@ -1,7 +1,7 @@
 #litegapps controller
 #by wahyu6070
 #License GPL3+
-#29-12-2020 - 03-11-2021
+#
 updaterversion=0,7
 updatercode=7
 based=/data/adb/litegapps_controller

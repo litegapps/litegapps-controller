@@ -7,7 +7,7 @@
 #
 
 propversion=v0.7
-propdate=14-11-2021
+propdate=19-11-2021
 
 # Colors
 GREEN='\e[01;32m'
@@ -159,16 +159,6 @@ black_func_2(){
 #Litegapps
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-
-#mount
-clear
-print "- Mounting Root"
-if mount -o rw,remount / ; then
-echo
-else
-abort "- Abort mounting root"
-sleep 3s
-fi
 
 getp5(){ grep "^$1" "$2" | head -n1 | cut -d = -f 2; }
 test -f /system_root/system/build.prop && SYSDIR=/system_root/system || test -f /system/system/build.prop && SYSDIR=/system/system || SYSDIR=/system
