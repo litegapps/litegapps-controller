@@ -106,6 +106,7 @@ com.google.android.calendar
 blacklist_term="
 com.termux
 com.termoneplus
+jackpal.androidterm
 "
 blacklist_system="
 com.google.android.inputmethod.latin
@@ -125,6 +126,20 @@ com.supercell.clashofclans
 com.neptune.domino
 com.garena.game.codm
 com.chess
+com.pubg.newstate
+com.dts.freefireth
+com.dts.freefiremax
+com.miHoYo.GenshinImpact
+com.play.rosea
+com.tencent.iglite
+com.supercell.clashroyale
+com.kompasproductions.summertimesaga
+com.vng.pubgmobile
+com.epicgames.fortnite
+com.activision.callofduty.shooter
+com.ea.gp.apexlegendsmobilefps
+com.netease.chiji
+com.netease.lztgglobal
 "
 black_func_1(){
 	local BLACK_LIST_GAMING_1=$DATA/black_list_gaming1
