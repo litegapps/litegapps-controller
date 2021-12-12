@@ -3,7 +3,7 @@
 #Litegapps controller
 #by wahyu6070
 #LICENSE GPL+ 
-#Latest Update  14-07-2021
+#Latest Update  11-12-2021
 . /tmp/backuptool.functions
 log=/data/media/0/Android/litegapps/28-litegapps-controller.log
 BASE=/data/adb/litegapps_controller
@@ -51,6 +51,7 @@ vendor=/vendor
 #enable/disable backup and restore
 if [ ! -f $BASE/config/backup_restore ]; then
 sedlog "config backup_restore is disable"
+print "LiteGapps Controller Backup/Restore Is Disable"
 exit 0
 fi
 

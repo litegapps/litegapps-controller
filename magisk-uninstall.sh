@@ -1,7 +1,10 @@
+# Magisk module uninstaller
+
+BASE=/adb/litegapps_controller
+
 rm -rf /data/litegapps
-rm -rf /data/litegapps_contoller
-#rm -rf $system/bin/litegapps
+rm -rf $BASE
 
 if [ -f /data/adb/litegapps_controller ]; then
-rm -rf /data/adb/litegapps_controller
+	rm -rf /data/adb/litegapps_controller
 fi

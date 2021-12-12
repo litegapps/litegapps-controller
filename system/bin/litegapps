@@ -6,8 +6,8 @@
 #if you copy some code here please permission to the owner
 #
 
-propversion=v0.7
-propdate=19-11-2021
+propversion=v0.8
+propdate=11-12-2021
 
 # Colors
 GREEN='\e[01;32m'
@@ -101,6 +101,8 @@ org.lineageos.snap
 com.android.vending
 com.google.android.calculator
 com.google.android.calendar
+com.duckduckgo.mobile.android
+com.google.android.apps.cameralite
 "
 
 blacklist_term="
@@ -113,6 +115,7 @@ com.google.android.inputmethod.latin
 com.google.android.gms
 "
 blacklist_apps="
+com.google.android.inputmethod.latin
 com.mixplorer
 com.google.android.apps.messaging
 com.google.android.play.games
@@ -1062,7 +1065,7 @@ while true; do
 clear
 test -f $DATA/battery_saver && batterystatus="${VIOLET}3.Disable Battery... ${NC}${GREEN}" || batterystatus="3.Battery Saver      "
 print " "
-print "                   ${CYAN}Lite${BLUE}G${RED}a${YELLOW}p${BLUE}p${GREEN}s ${YELLOW}Controller${GREEN}"
+print "                   ${YELLOW}LiteGapps ${WHITE}Controller${GREEN}"
 print " "
 print " "
 print "1.Boost              ${YELLOW}5.Litegapps Menu${GREEN}      9.Tweaks"
