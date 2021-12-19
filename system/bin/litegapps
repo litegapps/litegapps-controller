@@ -177,6 +177,7 @@ black_func_2(){
 #Litegapps
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+export PATH=/sbin:/sbin/su:/su/bin:/su/xbin:/system/bin:/system/xbin:/data/adb/litegapps_controller/xbin:/data/data/com.termux/files/usr/bin
 
 getp5(){ grep "^$1" "$2" | head -n1 | cut -d = -f 2; }
 test -f /system_root/system/build.prop && SYSDIR=/system_root/system || test -f /system/system/build.prop && SYSDIR=/system/system || SYSDIR=/system
@@ -761,12 +762,11 @@ addon(){
 	print "1. Fake Battery Set"
 	print "2. Led Calerful"
 	print "3. Disable Led"
-	print "4. Set brightness"
-	print "5. Boot Unpacker"
-	print "6. Set all permissions apk installed"
-	print "7. Enable All Apps"
-	print "8. Clean Cache Game"
-	print "9. Exit"
+	print "4. Boot Unpacker"
+	print "5. Set all permissions apk installed"
+	print "6. Enable All Apps"
+	print "7. Clean Cache Game"
+	print "8. Exit"
 	print " "
 	echo -n "Select Menu : "
 	read addons
@@ -787,24 +787,9 @@ addon(){
 		print "- Done"
 		sleep 2s
 	;;
-	4)
-		bigmax=$(cat /sys/class/leds/wled/max_brightness)
-		print
-		echo -n "- Set brightness 0 - $bigmax : "
-		read bigset
-		if [ $bigset -eq $bigset ]; then
-			echo "$bigset" > /sys/class/leds/wled/brightness
-			print "- Set $brightness"
-			sleep 2s
-		else
-			print
-			print "- $bigset Is Not number"
-			sleep 2s
-		fi
+	4) addon_boot_unpacker
 	;;
-	5) addon_boot_unpacker
-	;;
-	6)
+	5)
 		print_title "Set All Permissions APK Installed"
 		for b in $(pm list packages -3); do
 			package=`getp1 $b`
@@ -829,12 +814,12 @@ addon(){
 		done
 		end_menu
 	;;
-	7) addon_enable_all_apps
+	6) addon_enable_all_apps
 	;;
-	8)
+	7)
 	addon_ccg
 	;;
-	9) break ;;
+	8) break ;;
 	*)
 		error "Invalid selection"; sleep 2s ;;
 	esac
