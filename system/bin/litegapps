@@ -7,7 +7,7 @@
 #
 
 propversion=v0.8
-propdate=11-12-2021
+propdate=20-12-2021
 
 # Colors
 GREEN='\e[01;32m'
