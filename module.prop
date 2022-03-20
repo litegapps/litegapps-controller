@@ -8,6 +8,6 @@ device=All
 author=wahyu6070
 description=Litegapps Controller is additional features of litegapps and litegapps++
 typeinstall=auto
-updateJson=https://raw.githubusercontent.com/Magisk-Modules-Repo/zipsigner/master/update.json
+updateJson=https://raw.githubusercontent.com/litegapps/litegapps-controller/main/update.json
 support=https://litegapps.github.io
 donate=https://www.paypal.me/wahyu6070
