@@ -1,4 +1,5 @@
-• v0.9
-• Added Gms Dose
+**v0.9**
+- Fix 3x booster
+- 
 
 

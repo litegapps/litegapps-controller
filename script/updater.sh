@@ -2,8 +2,8 @@
 #by wahyu6070
 #License GPL3+
 #
-updaterversion=0.8
-updatercode=8
+updaterversion=0.9
+updatercode=9
 based=/data/adb/litegapps_controller
 bins=$based/xbin
 
@@ -86,10 +86,10 @@ print "- Update successful"
 elif [ "$(getp updatercode $based/download/updater)" -eq "$(getp updatercode $based/updater.sh)" ]; then
 print "  Updater is up to date !"
 print "  Version : $(getp updaterversion $based/updater.sh)"
-else
-print "  Mode DEV !"
-print "  Version old : $(getp updaterversion $based/updater.sh)"
-print "  Version new : $(getp updaterversion $based/download/updater)" 
+#else
+#print "  Mode DEV !"
+#print "  Version old : $(getp updaterversion $based/updater.sh)"
+#print "  Version new : $(getp updaterversion $based/download/updater)" 
 fi
 
 del $based/download/updater

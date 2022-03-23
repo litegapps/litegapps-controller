@@ -4,8 +4,8 @@
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #
-litegapps_menu_version=0.8
-litegapps_menu_code=8
+litegapps_menu_version=0.9
+litegapps_menu_code=9
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #base func
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -765,7 +765,7 @@ TOOLS_FORCE_MAGISK(){
 		print "# already in magisk module mode (force)"
 		print " Name : $(getp name $MAGISK_DIR/module.prop)"
 	else 
-		[ -d $MAGISK_DIR ] && cdir $MAGISK_DIR
+		[ ! -d $MAGISK_DIR ] && cdir $MAGISK_DIR
 		[ -f $MAGISK_DIR/android_system_force ] && del $MAGISK_DIR/android_system_force
 		print "- Make Magisk Module"
 		echo "id=litegapps" > $MAGISK_DIR/module.prop
