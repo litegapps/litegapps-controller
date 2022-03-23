@@ -35,9 +35,9 @@ N='\e[0m'			# How to use (example): echo "${G}example${N}"
 clear
 printmid "${Y}Litegapps Menu Updater${G}"
 print
-print "${Y}- Checking Litegapps Menu${G}"
+print "${Y}- Litegapps Menu${G}"
 test ! -d $based/download && mkdir -p $based/download
-$bins/curl -L -o $based/download/litegapps_menu https://raw.githubusercontent.com/litegapps/litegapps-controller/main/litegapps_controller/litegapps_menu.sh 2>/dev/null
+$bins/curl -L -o $based/download/litegapps_menu https://raw.githubusercontent.com/litegapps/litegapps-controller/main/script/litegapps_menu.sh 2>/dev/null
 if [ $? != 0 ]; then
 print "$R Please check your internet connection $G"
 sleep 6s
@@ -62,10 +62,10 @@ print "  Mode DEV !"
 print "  Version old : $(getp litegapps_menu_version $based/litegapps_menu.sh)"
 print "  Version new : $(getp litegapps_menu_version $based/download/litegapps_menu)" 
 fi
-del $based/download/litegapps_menu
+#del $based/download/litegapps_menu
 
-print "${Y}- Checking Updater${G}"
-$bins/curl -L -o $based/download/updater https://raw.githubusercontent.com/litegapps/litegapps-controller/main/litegapps_controller/updater.sh 2>/dev/null
+print "${Y}- Updater${G}"
+$bins/curl -L -o $based/download/updater https://raw.githubusercontent.com/litegapps/litegapps-controller/main/script/updater.sh 2>/dev/null
 if [ $? != 0 ]; then
 print "$R Please check your internet connection $G"
 sleep 6s
@@ -86,17 +86,17 @@ print "- Update successful"
 elif [ "$(getp updatercode $based/download/updater)" -eq "$(getp updatercode $based/updater.sh)" ]; then
 print "  Updater is up to date !"
 print "  Version : $(getp updaterversion $based/updater.sh)"
-#else
-#print "  Mode DEV !"
-#print "  Version old : $(getp updaterversion $based/updater.sh)"
-#print "  Version new : $(getp updaterversion $based/download/updater)" 
+else
+print "  Mode DEV !"
+print "  Version old : $(getp updaterversion $based/updater.sh)"
+print "  Version new : $(getp updaterversion $based/download/updater)" 
 fi
 
-del $based/download/updater
+#del $based/download/updater
 
 print "- Done"
 print
 print "${C}1.Exit"
 print
 echo -n "${Y}Select Menu : ${V}"
-read lullll
+read Z
