@@ -1,8 +1,6 @@
 # LiteGapps controller
 # By wahyu6070
 
-SYSDIR=$SYSTEM
-VENDIR=/vendor
 SDKTARGET=$API
 BASE=/data/adb/litegapps_controller
 BIN=$BASE/bin
@@ -13,11 +11,11 @@ MODULENAME=`getp name $MODPATH/module.prop`
 MODULEANDROID=`getp android $MODPATH/module.prop`
 MODULEDATE=`getp date $MODPATH/module.prop`
 MODULEAUTHOR=`getp author $MODPATH/module.prop`
-ANDROIDVERSION=$(getp ro.build.version.release $SYSDIR/build.prop)
-ANDROIDMODEL=$(getp ro.product.vendor.model $VENDIR/build.prop)
-ANDROIDDEVICE=$(getp ro.product.vendor.device $VENDIR/build.prop)
-ANDROIDROM=$(getp ro.build.display.id $SYSDIR/build.prop)
-API=`getp ro.build.version.sdk $SYSDIR/build.prop`
+ANDROIDVERSION=$(getp ro.build.version.release $SYSTEM/build.prop)
+ANDROIDMODEL=$(getp ro.product.vendor.model $VENDOR/build.prop)
+ANDROIDDEVICE=$(getp ro.product.vendor.device $VENDOR/build.prop)
+ANDROIDROM=$(getp ro.build.display.id $SYSTEM/build.prop)
+API=`getp ro.build.version.sdk $SYSTEM/build.prop`
 device_abpartition=$(getprop ro.build.ab_update)
 [ -n "$device_abpartition" ] || device_abpartition="A only"
 print "____________________________________"
@@ -37,8 +35,14 @@ print "| Android Version : $ANDROIDVERSION"
 print "| Architecture    : $ARCH"
 print "| Sdk             : $SDKTARGET"
 print "| Seamless        : $device_abpartition"
-[ $TYPEINSTALL ] || TYPEINSTALL=magisk
-print "| Mode Install    : $TYPEINSTALL"
+case $TYPEINSTALL in
+magisk)
+print "| Mode Install    : Systemless"
+;;
+*)
+print "| Mode Install    : Non systemless"
+;;
+esac
 print "|___________________________________"
 print " "
 
@@ -75,6 +79,9 @@ for P in $(ls -1 $BIN); do
 		ln -sf $BIN/$P $BASE/xbin/$P
 	fi
 done
+
+#copy litegapps binary
+cp -pf $MODPATH/system/bin/litegapps $MODPATH/system/bin/litegapps2
 
 if [ -f /data/adb/magisk/magiskboot ]; then
 	cp -pf /data/adb/magisk/magiskboot $MODPATH/system/bin/
@@ -117,6 +124,6 @@ print
 print "- Open Terminal"
 print
 print "- su"
-print "- litegapps"
+print "- litegapps or litegapps2"
 print
 print
