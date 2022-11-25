@@ -4,8 +4,8 @@
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #
-litegapps_menu_version=0.9
-litegapps_menu_code=9
+litegapps_menu_version=1.0
+litegapps_menu_code=10
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #base func
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -326,270 +326,6 @@ menu_end
 #################################################
 #Menu functions
 #################################################
-DOWNLOAD_CORE(){
-	while true; do
-	local SERVER=https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/core
-	print_title "Download Addon Core"
-	print "1. Carrier Services"
-	print "2. Carrier Setup"
-	print "3. Common"
-	print "4. Config Updater"
-	print "5. Google Play Services"
-	print "6. Google Backup Transport"
-	print "7. Google Contacts Sync Adapter"
-	print "8. Google Ext Shared"
-	print "9. Google One Time Initializer"
-	print "10. Google Partner Setup"
-	print "11. Google Restore"
-	print "12. Google Services Framework"
-	print "13. Play Store"
-	print "14. Pixel Setup Wizard"
-	print "15. Setup Wizard"
-	print "16. Exit"
-	SELECT
-	case $PILIH in
-	1) download_file CarrierServices $SERVER/CarrierServices.zip/download
-	;;
-	2) download_file CarrierSetup $SERVER/CarrierSetup.zip/download
-	;;
-	3) download_file Common $SERVER/Common.zip/download
-	;;
-	4) download_file ConfigUpdater $SERVER/ConfigUpdater.zip/download
-	;;
-	5) download_file GmsCore $SERVER/GmsCore.zip/download
-	;;
-	6) download_file GoogleBackupTransport $SERVER/GoogleBackupTransport.zip/download
-	;;
-	7) download_file GoogleContactsSyncAdapter Adapter $SERVER/GoogleContactsSyncAdapter.zip/download
-	;;
-	8) download_file GoogleExtShared $SERVER/GoogleExtShared.zip/download
-	;; 
-	9) download_file GoogleOneTimeInitializer $SERVER/GoogleOneTimeInitializer.zip/download
-	;;
-	10) download_file GooglePartnerSetup $SERVER/GooglePartnerSetup.zip/download
-	;;
-	11) download_file GoogleRestore $SERVER/GoogleRestore.zip/download
-	;;
-	12) download_file GoogleServicesFramework $SERVER/GoogleServicesFramework.zip/download
-	;;
-	13) download_file Phonesky $SERVER/Phonesky.zip/download
-	;;
-	14) download_file PixelSetupWizard $SERVER/PixelSetupWizard.zip/download
-	;;
-	15) download_file SetupWizard $SERVER/SetupWizard.zip/download
-	;;
-	16 | exit | e)
-	break
-	;;
-	*)
-	error "Please select number in menu list"
-	sleep 2s
-	;;
-	esac
-	done
-	}
-DOWNLOAD_GAPPS(){
-	while true; do
-	local SERVER=https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/gapps
-	print_title "Download Addon Gapps"
-	print "1. Android Auto"
-	print "2. AR Core"
-	print "3. Chrome"
-	print "4. Google Clock"
-	print "5. Device Policy"
-	print "6. Dream Liner"
-	print "7. Drive"
-	print "8. Files"
-	print "9. Gmail"
-	print "10. Google Asistant"
-	print "11. Google Calculator"
-	print "12. Google Calender"
-	print "13. Google Contact"
-	print "14. Google Dialer"
-	print "15. Google Keyboard"
-	print "16. Google TTS"
-	print "17. Google Web View"
-	print "18. Google Keep"
-	print "19. Location History"
-	print "20. Google Maps"
-	print "21. Markup Google"
-	print "22. Google Messenger"
-	print "23. Google Photos"
-	print "24. Pixel Launcher"
-	print "25. Pixel Live Wallpaper"
-	print "26. Google Play Games"
-	print "27. Google Recorder"
-	print "28. Sound Picker"
-	print "29. Scribe"
-	print "30. Talkback"
-	print "31. Turbo"
-	print "32. Tycho"
-	print "33. Google Search"
-	print "34. Google Videos"
-	print "35. Google Wallpaper Picker"
-	print "36. Wellbeing"
-	print "37. Youtube"
-	print "38. Youtube Music"
-	print "39. Exit"
-	SELECT
-	case $PILIH in
-	1) download_file AndroidAuto $SERVER/AndroidAuto.zip/download
-	;;
-	2) download_file Arcore $SERVER/Arcore.zip/download
-	;;
-	3) download_file Chrome $SERVER/Chrome.zip/download
-	;;
-	4) download_file DeskClockGoogle $SERVER/DeskClockGoogle.zip/download
-	;;
-	5) download_file DevicePolicy $SERVER/DevicePolicy.zip/download
-	;;
-	6) download_file DreamLiner $SERVER/DreamLiner.zip/download
-	;;
-	7) download_file Drive Adapter $SERVER/Drive.zip/download
-	;;
-	8) download_file Files $SERVER/Files.zip/download
-	;; 
-	9) download_file Gmail $SERVER/Gmail.zip/download
-	;;
-	10) download_file GoogleAssistant $SERVER/GoogleAssistant.zip/download
-	;;
-	11) download_file GoogleCalculator $SERVER/GoogleCalculator.zip/download
-	;;
-	12) download_file GoogleCalendar $SERVER/GoogleCalendar.zip/download
-	;;
-	13) download_file GoogleContacts $SERVER/GoogleContacts.zip/download
-	;;
-	14) download_file GoogleDialer $SERVER/GoogleDialer.zip/download
-	;;
-	15) download_file GoogleKeyboard $SERVER/GoogleKeyboard.zip/download
-	;;
-	16) download_file GoogleTTS $SERVER/GoogleTTS.zip/download
-	;;
-	17) download_file GoogleWebView $SERVER/GoogleWebView.zip/download
-	;;
-	18) download_file Keep $SERVER/Keep.zip/download
-	;;
-	19) download_file LocationHistory $SERVER/LocationHistory.zip/download
-	;;
-	20) download_file Maps $SERVER/Maps.zip/download
-	;;
-	21) download_file MarkupGoogle $SERVER/MarkupGoogle.zip/download
-	;;
-	22) download_file Messaging Adapter $SERVER/Messaging.zip/download
-	;;
-	23) download_file Photos $SERVER/Photos.zip/download
-	;; 
-	24) download_file PixelLauncher $SERVER/PixelLauncher.zip/download
-	;;
-	25) download_file PixelLiveWallpaper $SERVER/PixelLiveWallpaper.zip/download
-	;;
-	26) download_file PlayGames $SERVER/PlayGames.zip/download
-	;;
-	27) download_file Recorder $SERVER/Recorder.zip/download
-	;;
-	28) download_file SoundPicker $SERVER/SoundPicker.zip/download
-	;;
-	29) download_file Sribe $SERVER/Sribe.zip/download
-	;;
-	30) download_file Talkback $SERVER/Talkback.zip/download
-	;;
-	31) download_file Turbo Adapter $SERVER/Turbo.zip/download
-	;;
-	32) download_file Tycho $SERVER/Tycho.zip/download
-	;; 
-	33) download_file Velvet $SERVER/Velvet.zip/download
-	;;
-	34) download_file Videos $SERVER/Videos.zip/download
-	;;
-	35) download_file WallpaperPicker $SERVER/WallpaperPicker.zip/download
-	;;
-	36) download_file Wellbeing $SERVER/Wellbeing.zip/download
-	;;
-	37) download_file Youtube $SERVER/Youtube.zip/download
-	;;
-	38) download_file YoutubeMusic.zip $SERVER/YoutubeMusic.zip/download
-	;;
-	39 | exit | e)
-	
-	break
-	;;
-	*)
-	error "Please select number in menu list"
-	sleep 2s
-	;;
-	esac
-	done
-	}
-	
-DOWNLOAD_GO(){
-	while true; do
-	local SERVER=https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/go
-	print_title "Download Addon Google Go"
-	print "1. Google Asistant Go"
-	print "2. Gallery Go"
-	print "3. Gmail Go"
-	print "4. Maps Go"
-	print "5. Navigation Go"
-	print "6. Google Search Go"
-	print "7. Exit"
-	SELECT
-	case $PILIH in
-	1) download_file AssistantGo $SERVER/AssistantGo.zip/download
-	;;
-	2) download_file GalleryGo $SERVER/GalleryGo.zip/download
-	;;
-	3) download_file GmailGo $SERVER/GmailGo.zip/download
-	;;
-	4) download_file MapsGo $SERVER/MapsGo.zip/download
-	;;
-	5) download_file NavigationGo $SERVER/NavigationGo.zip/download
-	;;
-	6) download_file GoogleSearchGo $SERVER/GoogleSearchGo.zip/download
-	;;
-	7 | exit | e)
-	
-	break
-	;;
-	*)
-	error "Please select number in menu list"
-	sleep 2s
-	;;
-	esac
-	done
-	}
-DOWNLOAD_ETC(){
-	while true; do
-	local SERVER=https://sourceforge.net/projects/litegapps/files/addon/$ARCH/$SDK/etc
-	print_title "Download Addon Google Etc"
-	print "1. Termux"
-	print "2. Snaptube"
-	print "3. Mixplorer"
-	print "4. Vanced Manager"
-	print "5. Screen Recorder"
-	print "6. Exit"
-	SELECT
-	case $PILIH in
-	1) download_file Termux $SERVER/Termux.zip/download
-	;;
-	2) download_file Snaptube $SERVER/Snaptube.zip/download
-	;;
-	3) download_file Mixplorer $SERVER/Mixplorer.zip/download
-	;;
-	4) download_file VancedManager $SERVER/VancedManager.zip/download
-	;;
-	5) download_file ScreenRecorder $SERVER/ScreenRecorder.zip/download
-	;;
-	6 | exit | e)
-	
-	break
-	;;
-	*)
-	error "Please select number in menu list"
-	sleep 2s
-	;;
-	esac
-	done
-	}
 menu_download(){
 	while true; do
 	print_title "Addon Download List"
@@ -940,14 +676,13 @@ for W900 in $SYSTEM $PRODUCT $SYSTEM_EXT; do
 	fi
 done
 print
-print "1.Download package"
+print "1.Check package"
 print "2.Fix"
 print "3.Install ZIP packages"
 print "4.Settings"
 print "5.Tools"
-print "6.Updater"
-print "7.About "
-print "8.Exit"
+print "6.About "
+print "7.Exit"
 print
 echo -n "Select Menu : ${V}"
 read menu77
@@ -968,13 +703,9 @@ read menu77
 		TOOLS
 		;;
 		6)
-		chmod 755 $BASE/updater.sh
-		. /$BASE/updater.sh
-		;;
-		7)
 		menu_about
 		;;
-		8)
+		7)
 		break
 		;;
 		*)
