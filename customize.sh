@@ -11,40 +11,55 @@ MODULENAME=`getp name $MODPATH/module.prop`
 MODULEANDROID=`getp android $MODPATH/module.prop`
 MODULEDATE=`getp date $MODPATH/module.prop`
 MODULEAUTHOR=`getp author $MODPATH/module.prop`
-ANDROIDVERSION=$(getp ro.build.version.release $SYSTEM/build.prop)
-ANDROIDMODEL=$(getp ro.product.vendor.model $VENDOR/build.prop)
-ANDROIDDEVICE=$(getp ro.product.vendor.device $VENDOR/build.prop)
-ANDROIDROM=$(getp ro.build.display.id $SYSTEM/build.prop)
-API=`getp ro.build.version.sdk $SYSTEM/build.prop`
-device_abpartition=$(getprop ro.build.ab_update)
-[ -n "$device_abpartition" ] || device_abpartition="A only"
-print "____________________________________"
-print "|"
-print "| Name            : $MODULENAME"
-print "| Version         : $MODULEVERSION"
-print "| Build date      : $MODULEDATE"
-print "| By              : $MODULEAUTHOR"
-print "|___________________________________"
-print "|"
-print "| Telegram        : https://t.me/litegapps"
-print "|___________________________________"
-print "|              Device Info"
-print "| Name Rom        : $ANDROIDROM"
-print "| Device          : $ANDROIDMODEL ($ANDROIDDEVICE)"
-print "| Android Version : $ANDROIDVERSION"
-print "| Architecture    : $ARCH"
-print "| Sdk             : $SDKTARGET"
-print "| Seamless        : $device_abpartition"
+[ -n "$system" ] || system="systemless"
+[ -n "$TYPEINSTALL" ] || TYPEINSTALL="magisk module"
+printlog "____________________________________"
+printlog "|"
+printlog "| Name            : $MODULENAME"
+printlog "| Version         : $MODULEVERSION"
+printlog "| Build date      : $MODULEDATE"
+printlog "| By              : $MODULEAUTHOR"
 case $TYPEINSTALL in
 magisk)
-print "| Mode Install    : Systemless"
+printlog "| Mode            : systemless (Magisk Module)"
 ;;
 *)
-print "| Mode Install    : Non systemless"
+printlog "| Mode            : non systemless"
 ;;
 esac
-print "|___________________________________"
-print " "
+printlog "|___________________________________"
+printlog "|"
+printlog "| Telegram        : https://t.me/litegapps"
+printlog "|___________________________________"
+printlog "|              Device Info"
+printlog "| Name Rom        : $(GET_PROP ro.build.display.id)"
+if [ "$(GET_PROP ro.product.vendor.model)" ]; then
+printlog "| Device          : $(GET_PROP ro.product.vendor.model)"
+elif [ "$(GET_PROP ro.product.model)" ]; then
+printlog "| Device          : $(GET_PROP ro.product.model)"
+else
+printlog "| Device          : null"
+fi
+
+if [ "$(GET_PROP ro.product.vendor.device)" ]; then
+printlog "| Codename        : $(GET_PROP ro.product.vendor.device)"
+elif [ "$(GET_PROP ro.product.device)" ]; then
+printlog "| Codename        : $(GET_PROP ro.product.device)"
+else
+printlog "| Codename        : null"
+fi
+printlog "| Android Version : $(GET_PROP ro.build.version.release)"
+printlog "| Architecture    : $ARCH"
+printlog "| Api             : $(GET_PROP ro.build.version.sdk)"
+printlog "| Density         : $(GET_PROP ro.sf.lcd_density)"
+if $(getprop ro.build.ab_update); then
+	printlog "| Seamless        : A/B (slot $(find_slot))"
+else
+	printlog "| Seamless        : A only"
+fi
+printlog "| BootMode        : $BOOTMODE"
+sedlog "| System          : $SYSTEM"
+printlog "|___________________________________"
 
 
 [ -d $BASE ] && rm -rf $BASE && mkdir -p $BASE || mkdir -p $BASE

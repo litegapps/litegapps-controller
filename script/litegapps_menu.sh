@@ -384,7 +384,8 @@ menu_tweaks(){
 	print
 	print " 1. Fix Permissions system files"
 	print " 2. Fix Permissions google apps"
-	print " 3. Back"
+	print " 3. Fix late notification" 
+	print " 4. Back"
 	print
 	echo -n "  Select Menu : "
 	read perm33
@@ -441,6 +442,17 @@ menu_tweaks(){
 		menu_end
 		;;
 		3)
+			clear
+			printmid "Fix Permissions Google Apps"
+			print
+			local NUM=$NUM
+			for GF in $(find /data/data -type f -name *gms*); do
+			local NUM=$(((NUM+1)))
+			print "${NUM}. Removing ${WHITE}${GF}${G}"
+			done
+			menu_end
+		;;
+		4)
 		break
 			;;
 		*)
