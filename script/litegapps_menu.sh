@@ -507,8 +507,8 @@ INSTALL_FINGEPRINT(){
 		echo "name=LiteGapps Prop $MODEL" >> $MPROPS
 		echo "version=$litegapps_menu_version" >> $MPROPS
 		echo "versionCode=$litegapps_menu_code" >> $MPROPS
-		echo "author=litegapps_contoller" >> $PROPS
-		echo "description=Litegapps Controller props" >> $PROPS
+		echo "author=litegapps_contoller" >> $MPROPS
+		echo "description=Litegapps Controller props" >> $MPROPS
 		print "- Dump props"
 		local PROPS=$DIRM/system.prop
 		echo "ro.product.brand=$BRAND" >> $PROPS
@@ -574,7 +574,7 @@ MENU_DEVICE_FINGERPRINT(){
 	while true; do
 	print_title "Change Device Fingerprint"
 	print "$V Xiaomi${G}"
-	print "1.MI 11 plus"
+	print "1.MI 11 Ultra"
 	print "2.POCO F4 (MUNCH)"
 	print "3.Exit"
 	print
@@ -582,7 +582,7 @@ MENU_DEVICE_FINGERPRINT(){
 	read TG9
 	case $TG9 in
 	1)
-	INSTALL_FINGEPRINT mi_11_plus
+	INSTALL_FINGEPRINT mi_11_ultra
 	;;
 	2)
 	INSTALL_FINGEPRINT poco_f4
