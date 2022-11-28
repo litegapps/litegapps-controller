@@ -474,6 +474,125 @@ print
 print "${Y} $numzip ${G}Package Installed"
 menu_end
 }
+INSTALL_FINGEPRINT(){
+	local FINGERPRINT_D=$BASE/fingerprint
+	local NAME=$1
+	local NAME_F=$FINGERPRINT_D/$NAME
+	if [ -f /data/adb/magisk/busybox ]; then
+		local DIRM=/data/adb/modules/litegapps_prop
+		if [ -f $NAME_F ]; then
+		del $DIRM
+		cdir $DIRM
+		local BRAND=`getp brand $NAME_F`
+		local MANUFACTUR=`getp manufacturer $NAME_F`
+		local MARKETNAME=`getp marketname $NAME_F`
+		local MODEL=`getp model $NAME_F`
+		local CODENAME=`getp codename $NAME_F`
+		local FINGERPRINT=`getp fingerprint $NAME_F`
+		print
+		print
+		print
+		print "  ${Y}Change device profile${G}"
+		print 
+		print " Brand = ${WHITE}$BRAND${G}"
+		print " Manufacture = ${WHITE}$MANUFACTUR${G}"
+		print " Marketname = ${WHITE}$MARKETNAME${G}"
+		print " Model = ${WHITE}$MODEL${G}"
+		print " Codename = ${WHITE}$CODENAME${G}"
+		print " Fingerprint = ${WHITE}$FINGERPRINT${G}"
+		print
+		print "- Make module"
+		local MPROPS=$DIRM/module.prop
+		echo "id=litegapps_prop" >> $MPROPS
+		echo "name=LiteGapps Prop $MODEL" >> $MPROPS
+		echo "version=$litegapps_menu_version" >> $MPROPS
+		echo "versionCode=$litegapps_menu_code" >> $MPROPS
+		echo "author=litegapps_contoller" >> $PROPS
+		echo "description=Litegapps Controller props" >> $PROPS
+		print "- Dump props"
+		local PROPS=$DIRM/system.prop
+		echo "ro.product.brand=$BRAND" >> $PROPS
+		echo "ro.product.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.model=$MODEL" >> $PROPS
+		echo "ro.build.fingerprint=$FINGERPRINT" >> $PROPS
+		#echo "ro.build.product=$CODENAME" >> $PROPS
+		#vendor partition prop Android 8.0+
+		if [ $API -gt 26 ]; then
+		#vendor
+		echo "ro.product.vendor.brand=$BRAND" >> $PROPS
+		echo "ro.product.vendor.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.vendor.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.vendor.model=$MODEL" >> $PROPS
+		echo "ro.vendor.build.fingerprint=$FINGERPRINT" >> $PROPS
+		fi
+		#system and product partition prop Android 10+
+		if [ $API -gt 28 ]; then
+		#product
+		echo "ro.product.product.brand=$BRAND" >> $PROPS
+		echo "ro.product.product.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.product.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.product.model=$MODEL" >> $PROPS
+		echo "ro.product.build.fingerprint=$FINGERPRINT" >> $PROPS
+		#system
+		echo "ro.product.system.brand=$BRAND" >> $PROPS
+		echo "ro.product.system.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.system.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.system.model=$MODEL" >> $PROPS
+		echo "ro.system.build.fingerprint=$FINGERPRINT" >> $PROPS
+		fi
+
+		#system_ext and odm partition prop Android 11+
+		if [ $API -gt 29 ]; then
+		#system_ext
+		echo "ro.product.system_ext.brand=$BRAND" >> $PROPS
+		echo "ro.product.system_ext.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.system_ext.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.system_ext.model=$MODEL" >> $PROPS
+		echo "ro.system_ext.build.fingerprint=$FINGERPRINT" >> $PROPS
+		#odm
+		echo "ro.product.odm.brand=$BRAND" >> $PROPS
+		echo "ro.product.odm.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.odm.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.odm.model=$MODEL" >> $PROPS
+		echo "ro.odm.build.fingerprint=$FINGERPRINT" >> $PROPS
+		fi
+		else
+			error "! Device fingerprint <$FINGERPRINT_D/$NAME> not found"
+		fi
+	else
+		error "Please install magisk full version"
+	fi
+
+	print 
+	print "${Y}+ Note${G}"
+	print "To restore original device prop, you can delete it from magisk or delete directory ${WHITE}<${DIRM}>${G}"
+	
+	menu_end
+	}
+MENU_DEVICE_FINGERPRINT(){
+	while true; do
+	print_title "Change Device Fingerprint"
+	print "$V Xiaomi${G}"
+	print "1.MI 11 plus"
+	print "2.POCO F4 (MUNCH)"
+	print "3.Exit"
+	print
+	echo -n " Select Device : ${V}"
+	read TG9
+	case $TG9 in
+	1)
+	INSTALL_FINGEPRINT mi_11_plus
+	;;
+	2)
+	INSTALL_FINGEPRINT poco_f4
+	;;
+	3)
+	break
+	;;
+	esac
+	done
+	}
 TOOLS_GMS_PS(){
 	print_title "Clear data GMS And Play Store"
 	local LIST="
@@ -676,36 +795,42 @@ for W900 in $SYSTEM $PRODUCT $SYSTEM_EXT; do
 	fi
 done
 print
-print "1.Check package"
-print "2.Fix"
-print "3.Install ZIP packages"
-print "4.Settings"
-print "5.Tools"
-print "6.About "
-print "7.Exit"
+print "1.Download Packages (coming soon)"
+print "2.Change Device Fingerprint"
+print "3.Fix"
+print "4.Install ZIP packages"
+print "5.Settings"
+print "6.Tools"
+print "7.About "
+print "8.Exit"
 print
 echo -n "Select Menu : ${V}"
 read menu77
 	case $menu77 in
 		1)
+		echo
+		#
 		menu_download
 		;;
 		2)
-		menu_tweaks
+		MENU_DEVICE_FINGERPRINT
 		;;
 		3)
-		menu_zip_install
+		menu_tweaks
 		;;
 		4)
-		menu_settings
+		menu_zip_install
 		;;
 		5)
-		TOOLS
+		menu_settings
 		;;
 		6)
-		menu_about
+		TOOLS
 		;;
 		7)
+		menu_about
+		;;
+		8)
 		break
 		;;
 		*)
