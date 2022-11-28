@@ -139,21 +139,21 @@ if [ "$ABILONG" = "x86_64" ]; then ARCH=x64; ARCH32=x86; IS64BIT=true; fi;
 
 MAGISK_MOD=/data/adb/modules/litegapps
 if [ -f $MAGISK_MOD/module.prop ] && [ -f $MAGISK_MOD/magisk_mode_force ]; then
-MODE_INSTALL=MAGISK
-MODE_DESK="Magisk Module (force)"
-SYSTEM_INSTALL=/data/adb/modules/litegapps/system
+	MODE_INSTALL=MAGISK
+	MODE_DESK="Magisk Module (force)"
+	SYSTEM_INSTALL=/data/adb/modules/litegapps/system
 elif [ -f $MAGISK_MOD/module.prop ] && [ ! -f $MAGISK_MOD/android_system_force ]; then
-MODE_INSTALL=MAGISK
-MODE_DESK="Magisk Module"
-SYSTEM_INSTALL=/data/adb/modules/litegapps/system
+	MODE_INSTALL=MAGISK
+	MODE_DESK="Magisk Module"
+	SYSTEM_INSTALL=/data/adb/modules/litegapps/system
 elif [ -f $MAGISK_MOD/android_system_force ]; then
-MODE_DESK="Android system (Force)"
-MODE_INSTALL=REGULER
-SYSTEM_INSTALL=$SYSTEM
+	MODE_DESK="Android system (Force)"
+	MODE_INSTALL=REGULER
+	SYSTEM_INSTALL=$SYSTEM
 else
-MODE_DESK="Android system"
-MODE_INSTALL=REGULER
-SYSTEM_INSTALL=$SYSTEM
+	MODE_DESK="Android system"
+	MODE_INSTALL=REGULER
+	SYSTEM_INSTALL=$SYSTEM
 fi
 
 
@@ -809,8 +809,7 @@ read menu77
 	case $menu77 in
 		1)
 		echo
-		#
-		menu_download
+		#menu_download
 		;;
 		2)
 		MENU_DEVICE_FINGERPRINT
