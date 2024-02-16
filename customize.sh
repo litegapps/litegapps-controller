@@ -4,62 +4,13 @@
 SDKTARGET=$API
 BASE=/data/adb/litegapps_controller
 BIN=$BASE/bin
-print
-MODULEVERSION=`getp version $MODPATH/module.prop`
-MODULECODE=`getp versionCode $MODPATH/module.prop`
-MODULENAME=`getp name $MODPATH/module.prop`
-MODULEANDROID=`getp android $MODPATH/module.prop`
-MODULEDATE=`getp date $MODPATH/module.prop`
-MODULEAUTHOR=`getp author $MODPATH/module.prop`
-[ -n "$system" ] || system="systemless"
-[ -n "$TYPEINSTALL" ] || TYPEINSTALL="magisk module"
-printlog "____________________________________"
-printlog "|"
-printlog "| Name            : $MODULENAME"
-printlog "| Version         : $MODULEVERSION"
-printlog "| Build date      : $MODULEDATE"
-printlog "| By              : $MODULEAUTHOR"
-case $TYPEINSTALL in
-magisk)
-printlog "| Mode            : systemless (Magisk Module)"
-;;
-*)
-printlog "| Mode            : non systemless"
-;;
-esac
-printlog "|___________________________________"
-printlog "|"
-printlog "| Telegram        : https://t.me/litegapps"
-printlog "|___________________________________"
-printlog "|              Device Info"
-printlog "| Name Rom        : $(GET_PROP ro.build.display.id)"
-if [ "$(GET_PROP ro.product.vendor.model)" ]; then
-printlog "| Device          : $(GET_PROP ro.product.vendor.model)"
-elif [ "$(GET_PROP ro.product.model)" ]; then
-printlog "| Device          : $(GET_PROP ro.product.model)"
-else
-printlog "| Device          : null"
-fi
+chmod 755 $MODPATH/bin/litegapps-functions
+#litegapps functions
+. $MODPATH/bin/litegapps-functions
 
-if [ "$(GET_PROP ro.product.vendor.device)" ]; then
-printlog "| Codename        : $(GET_PROP ro.product.vendor.device)"
-elif [ "$(GET_PROP ro.product.device)" ]; then
-printlog "| Codename        : $(GET_PROP ro.product.device)"
-else
-printlog "| Codename        : null"
-fi
-printlog "| Android Version : $(GET_PROP ro.build.version.release)"
-printlog "| Architecture    : $ARCH"
-printlog "| Api             : $(GET_PROP ro.build.version.sdk)"
-printlog "| Density         : $(GET_PROP ro.sf.lcd_density)"
-if $(getprop ro.build.ab_update); then
-	printlog "| Seamless        : A/B (slot $(find_slot))"
-else
-	printlog "| Seamless        : A only"
-fi
-printlog "| BootMode        : $BOOTMODE"
-sedlog "| System          : $SYSTEM"
-printlog "|___________________________________"
+# main path
+INITIAL install
+
 
 
 [ -d $BASE ] && rm -rf $BASE && mkdir -p $BASE || mkdir -p $BASE
@@ -69,6 +20,8 @@ cp -af $MODPATH/script/* $BASE/
 print "- installing binary"
 test ! -d $BIN && mkdir -p $BIN
 cp -af $MODPATH/bin/$ARCH/* $BASE/bin/
+
+ADS https://payoffyes.com/b9p0mwvwgs?key=c882ea866d79e457f018e720ee79a171
 
 #curl
 print "- installing curl"
@@ -133,6 +86,11 @@ print "- Clean cache"
 for F in $LIST_TMP; do
 	rm -rf $F
 done
+
+
+ADS https://payoffyes.com/fbz37smn33?key=a6ae3c4640a1737a2a572d122c10794c
+
+
 print
 print "*Tips"
 print

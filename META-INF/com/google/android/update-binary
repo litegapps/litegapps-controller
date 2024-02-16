@@ -1,7 +1,7 @@
 #!/sbin/sh
-# Kopi Installer V1.8
+# Kopi Installer V1.9
 # Since 08-05-2020
-# Latest Update 21-01-2022
+# Latest Update 21-01-2024
 # by wahyu6070 (dont change)
 
 OUTFD=/proc/self/fd/$2;
@@ -154,8 +154,7 @@ setenforce 0
 [ "$AKHOME" ] || AKHOME=$POSTINSTALL/tmp/anykernel;
 [ "$ANDROID_ROOT" ] || ANDROID_ROOT=/system;
 
-
-file_getprop() {  grep "^$2=" "$1" |  cut -d= -f2-; }
+file_getprop() {  grep "^$2=" "$1" |  tail -n1 |  cut -d= -f2-; }
 find_slot() {
   local slot=$(getprop ro.boot.slot_suffix 2>/dev/null);
   [ "$slot" ] || slot=$( grep -o 'androidboot.slot_suffix=.*$' /proc/cmdline |  cut -d\  -f1 |  cut -d= -f2);
@@ -183,14 +182,14 @@ mount_apex() {
   [ -e /dev/block/loop1 ] && minorx=$( ls -l /dev/block/loop1 |  awk '{ print $6 }');
   num=0;
   for apex in /system_root/system/apex/*; do
-    dest=/apex/$( basename $apex .apex);
-    case $dest in
-      *.current|*.release) dest=$(echo $dest |  rev |  cut -d. -f2- |  rev);;
-    esac;
+    dest=/apex/$( basename $apex |  sed -E -e 's;\.apex$|\.capex$;;' -e 's;\.current$|\.release$;;');
      mkdir -p $dest;
     case $apex in
-      *.apex)
+      *.apex|*.capex)
+         unzip -qo $apex original_apex -d /apex;
+        [ -f /apex/original_apex ] && apex=/apex/original_apex;
          unzip -qo $apex apex_payload.img -d /apex;
+         mv -f /apex/original_apex $dest.apex 2>/dev/null;
          mv -f /apex/apex_payload.img $dest.img;
          mount -t ext4 -o ro,noatime $dest.img $dest 2>/dev/null;
         if [ $? != 0 ]; then
@@ -279,20 +278,19 @@ mount_all() {
   done;
   if is_mounted /system_root; then
     mount_apex;
-     #mount -o bind /system_root$system /system;
+     mount -o bind /system_root$system /system;
   fi;
   if ! is_mounted /persist && [ -e /dev/block/bootdevice/by-name/persist ]; then
     setup_mountpoint /persist;
      mount -o ro -t auto /dev/block/bootdevice/by-name/persist /persist;
   fi;
-  
-  #if [ -d /dev/block/mapper ]; then
-    #for block in system vendor product system_ext; do
-      #for slot in "" _a _b; do
-        #blockdev --setrw /dev/block/mapper/$block$slot 2>/dev/null
-      #done
-    #done
-  #fi
+  if [ -d /dev/block/mapper ]; then
+    for block in system vendor product system_ext; do
+      for slot in "" _a _b; do
+        blockdev --setrw /dev/block/mapper/$block$slot 2>/dev/null
+      done
+    done
+  fi
 }
 umount_all() {
   local mount;
@@ -444,9 +442,9 @@ export MODPATH=$kopi
 
 if [ -d $kopi ]; then
 	del $kopi
-	cdir $kopi || abort "- failed make dir $kopi"
+	cdir $kopi #|| abort "- failed make dir $kopi"
 else
-	cdir $kopi || abort "- failed make dir $kopi"
+	cdir $kopi #|| abort "- failed make dir $kopi"
 fi
 
 cd $kopi
@@ -454,6 +452,7 @@ print "- Extracting ZIP File"
 unzip -o "$ZIPFILE" >&2
 
 [ ! -f module.prop ] && abort "- Module.prop Not Found"
+
 
 #prop
 prop=$SYSTEM/build.prop
@@ -484,7 +483,7 @@ set_progress 0.5;
 
 #req
 minsdk=`getp minsdk $MODULE`
-if [ "$minsdk" -eq "$minsdk" ] && [ $API -lt "$minsdk" ]; then
+if [[ "$minsdk" -eq "$minsdk" ]] && [[ $API -lt "$minsdk" ]]; then
 abort "- Android version not support !"
 fi
 
@@ -493,12 +492,14 @@ if [ $(getp typeinstall $MODULE) = kopi ]; then TYPEINSTALL=kopi
 elif [ -f /sdcard/force_kopi ]; then TYPEINSTALL=kopi
 elif [ -f /dev/force_kopi ]; then TYPEINSTALL=kopi
 elif [ $(getp typeinstall $MODULE) = magisk ]; then TYPEINSTALL=magisk
+elif [ $(getp typeinstall $MODULE) = kopi ]; then TYPEINSTALL=kopi
 elif [ $(getp typeinstall $MODULE) = false ]; then TYPEINSTALL=false
 else
-	if $BOOTMODE; then
+
+	if [ -f /data/adb/magisk/util_functions.sh ]; then
 		TYPEINSTALL=magisk
-	elif [ -f /data/adb/magisk/util_functions.sh ]; then
-		TYPEINSTALL=magisk
+	elif $KSU; then
+		TYPEINSTALL=ksu
 	else
 		TYPEINSTALL=kopi
 	fi
@@ -527,7 +528,7 @@ else
 	[ -f customize.sh ] && chmod 0775 customize.sh && . ./customize.sh;
 	
 	case $TYPEINSTALL in
-	magisk)
+	magisk | ksu)
 	print "- Type Magisk Module"
 	[ -f /data/adb/magisk/util_functions.sh ] && [ $TYPEINSTALL = magisk ] && . /data/adb/magisk/util_functions.sh
 	for W8989 in $MAGISKMOD $MAGISKUP; do
