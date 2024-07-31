@@ -1,6 +1,6 @@
 {
-  "version": "v1.1",
-  "versionCode": "11",
+  "version": "v1.2",
+  "versionCode": "12",
   "zipUrl": "https://sourceforge.net/projects/litegapps/files/litegapps_controller/Litegapps-Controller_V10.zip/download",
   "changelog": "https://raw.githubusercontent.com/litegapps/litegapps-controller/main/changelog.md"
 }

@@ -1,0 +1,206 @@
+##
+# Beautiful Pixel Props https://t.me/PixelProps
+# By @T3SL4
+##
+
+###
+#-#
+###
+
+###
+# begin product/etc/build.prop
+###
+
+# begin common build properties
+ro.product.product.brand=google
+ro.product.product.device=redfin
+ro.product.product.manufacturer=Google
+ro.product.product.model=Pixel 5
+ro.product.product.name=redfin
+ro.product.build.date=Fri Sep 15 21:43:50 UTC 2023
+ro.product.build.date.utc=1694814230
+ro.product.build.fingerprint=google/redfin/redfin:14/UP1A.231105.001/10817346:user/release-keys
+ro.product.build.id=UP1A.231105.001
+ro.product.build.tags=release-keys
+ro.product.build.type=user
+ro.product.build.version.incremental=10817346
+ro.product.build.version.release=14
+ro.product.build.version.release_or_codename=14
+ro.product.build.version.sdk=34
+# end common build properties
+
+# begin PRODUCT_PRODUCT_PROPERTIES
+ro.support_one_handed_mode=true
+ro.charger.enable_suspend=true
+ro.opa.eligible_device=true
+ro.com.google.ime.bs_theme=true
+ro.com.google.ime.theme_id=5
+ro.com.google.ime.system_lm_dir=/product/usr/share/ime/google/d3_lms
+# end PRODUCT_PRODUCT_PROPERTIES
+
+###
+# end product/etc/build.prop
+###
+
+###
+#-#
+###
+
+###
+# begin vendor/build.prop
+###
+
+# begin common build properties
+ro.product.vendor.brand=google
+ro.product.vendor.device=redfin
+ro.product.vendor.manufacturer=Google
+ro.product.vendor.model=Pixel 5
+ro.product.vendor.name=redfin
+ro.vendor.build.date=Fri Sep 15 21:43:50 UTC 2023
+ro.vendor.build.date.utc=1694814230
+ro.vendor.build.fingerprint=google/redfin/redfin:14/UP1A.231105.001/10817346:user/release-keys
+ro.vendor.build.id=UP1A.231105.001
+ro.vendor.build.tags=release-keys
+ro.vendor.build.type=user
+ro.vendor.build.version.incremental=10817346
+ro.vendor.build.version.release=14
+ro.vendor.build.version.release_or_codename=14
+ro.vendor.build.version.sdk=34
+# end common build properties
+
+# begin ADDITIONAL_VENDOR_PROPERTIES
+ro.vendor.build.security_patch=2023-11-05
+# end ADDITIONAL_VENDOR_PROPERTIES
+
+# begin BOOTIMAGE_build_prop to_system_propERTIES
+ro.bootimage.build.date=Fri Sep 15 21:43:50 UTC 2023
+ro.bootimage.build.date.utc=1694814230
+ro.bootimage.build.fingerprint=google/redfin/redfin:14/UP1A.231105.001/10817346:user/release-keys
+# end BOOTIMAGE_build_prop to_system_propERTIES
+
+# begin PRODUCT_PROPERTY_OVERRIDES
+persist.rcs.supported=1
+persist.sysui.monet=true
+# end PRODUCT_PROPERTY_OVERRIDES
+
+###
+# end vendor/build.prop
+###
+
+###
+#-#
+###
+
+###
+# begin vendor/odm/etc/build.prop
+###
+
+# begin common build properties
+ro.product.odm.brand=google
+ro.product.odm.device=redfin
+ro.product.odm.manufacturer=Google
+ro.product.odm.model=Pixel 5
+ro.product.odm.name=redfin
+ro.odm.build.date=Fri Sep 15 21:43:50 UTC 2023
+ro.odm.build.date.utc=1694814230
+ro.odm.build.fingerprint=google/redfin/redfin:14/UP1A.231105.001/10817346:user/release-keys
+ro.odm.build.id=UP1A.231105.001
+ro.odm.build.tags=release-keys
+ro.odm.build.type=user
+ro.odm.build.version.incremental=10817346
+ro.odm.build.version.release=14
+ro.odm.build.version.release_or_codename=14
+ro.odm.build.version.sdk=34
+# end common build properties
+
+###
+# end vendor/odm/etc/build.prop
+###
+
+###
+#-#
+###
+
+###
+# begin system/system/build.prop
+###
+
+# begin common build properties
+ro.product.system.brand=google
+ro.product.system.device=generic
+ro.product.system.manufacturer=Google
+ro.product.system.model=mainline
+ro.product.system.name=mainline
+ro.system.build.date=Fri Sep 15 21:43:50 UTC 2023
+ro.system.build.date.utc=1694814230
+ro.system.build.fingerprint=google/redfin/redfin:14/UP1A.231105.001/10817346:user/release-keys
+ro.system.build.id=UP1A.231105.001
+ro.system.build.tags=release-keys
+ro.system.build.type=user
+ro.system.build.version.incremental=10817346
+ro.system.build.version.release=14
+ro.system.build.version.release_or_codename=14
+ro.system.build.version.sdk=34
+# end common build properties
+
+# begin build properties
+ro.build.id=UP1A.231105.001
+ro.build.display.id=UP1A.231105.001
+ro.build.version.incremental=10817346
+ro.build.version.sdk=34
+ro.build.version.release=14
+ro.build.version.release_or_codename=14
+ro.build.version.security_patch=2023-11-05
+ro.build.date=Fri Sep 15 21:43:50 UTC 2023
+ro.build.date.utc=1694814230
+ro.build.type=user
+ro.build.user=android-build
+ro.build.host=abfarm-release-rbe-64-2004-0055
+ro.build.tags=release-keys
+ro.build.flavor=redfin-user
+ro.build.product=redfin
+ro.build.description=redfin-user 14 UP1A.231105.001 10817346 release-keys
+# end build properties
+
+# begin extra's from /system/build.prop
+ro.build.fingerprint=google/redfin/redfin:14/UP1A.231105.001/10817346:user/release-keys
+ro.product.brand=google
+ro.product.device=redfin
+ro.product.manufacturer=Google
+ro.product.model=Pixel 5
+ro.product.name=redfin
+# end extra's from /system/build.prop
+
+###
+# end system/system/build.prop
+###
+
+###
+#-#
+###
+
+###
+# begin system_ext/etc/build.prop
+###
+
+# begin common build properties
+ro.product.system_ext.brand=google
+ro.product.system_ext.device=redfin
+ro.product.system_ext.manufacturer=Google
+ro.product.system_ext.model=Pixel 5
+ro.product.system_ext.name=redfin
+ro.system_ext.build.date=Fri Sep 15 21:43:50 UTC 2023
+ro.system_ext.build.date.utc=1694814230
+ro.system_ext.build.fingerprint=google/redfin/redfin:14/UP1A.231105.001/10817346:user/release-keys
+ro.system_ext.build.id=UP1A.231105.001
+ro.system_ext.build.tags=release-keys
+ro.system_ext.build.type=user
+ro.system_ext.build.version.incremental=10817346
+ro.system_ext.build.version.release=14
+ro.system_ext.build.version.release_or_codename=14
+ro.system_ext.build.version.sdk=34
+# end common build properties
+
+###
+# end system_ext/etc/build.prop
+###
