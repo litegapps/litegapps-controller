@@ -5,9 +5,11 @@
 #License GPL3+
 #if you copy some code here please permission to the owner
 #
-
-propversion=v1.1
-propdate=15-02-2024
+NAME=LiteGapps
+ABOUT_LINK=https://litegapps.github.io/doc/litegapps_controller.html
+propversion=v1.2
+propcode=12
+propdate=01-08-2024
 
 # Colors
 GREEN='\e[01;32m'
@@ -25,13 +27,17 @@ N='\e[0m'
 
 
 BASED=/sdcard/Android/litegapps
-LOG=$BASED/liteggapps_controller.log
+LOG=$BASED/litegapps_controller.log
 DATA=$BASED/data
+FILES=$BASED/files
+CACHE=$BASED/cache
 
-#▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+API=`getprop ro.build.version.sdk`
+
 #Functions
-#▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 print() { echo "$1"; }
+GETPROP(){ grep "^$1" "$2" | head -n1 | cut -d = -f 2; }
 getp(){ echo $1 "$2" | head -n1 | cut -d = -f 2; }
 getp1(){ echo $1 | head -n1 | cut -d : -f 2; }
 del(){ rm -rf "$@" ; }
@@ -93,6 +99,35 @@ print_true(){
 print_false(){
 	print "${GREEN}${1} = ${WHITE}${2}${GREEN}"
 	}
+app_true(){
+	
+	pm list packages | grep -q $1
+	if [ $? -eq "0" ]; then
+	return 0
+	else
+	return 1
+	fi
+	
+	}
+OPEN_LINK(){
+	local ads_link=$1
+	
+	if $(app_true com.android.chrome); then
+	am start -n com.android.chrome/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d $ads_link
+	elif $(app_true com.chrome.canary); then
+	am start -n com.chrome.canary/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d $ads_link
+	elif $(app_true com.chrome.beta); then
+	am start -n com.chrome.beta/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d $ads_link
+	elif $(app_true com.chrome.dev); then
+	am start -n com.chrome.dev/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d $ads_link
+	else
+	am start -a android.intent.action.VIEW -d $ads_link
+	fi
+	}
+REBOOT(){
+	touch $DATA/reboot
+	
+	}
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 # LIST APPS
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -144,6 +179,9 @@ com.ea.gp.apexlegendsmobilefps
 com.netease.chiji
 com.netease.lztgglobal
 "
+
+
+
 black_func_1(){
 	local BLACK_LIST_GAMING_1=$DATA/black_list_gaming1
 	if [ -f $DATA/black_list_gaming1 ]; then
@@ -193,7 +231,34 @@ esac
 
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-
+is_full(){
+	local BIN9="
+	aapt
+	aapt2
+	brotli
+	busybox
+	htop
+	tar
+	unzip
+	zip
+	zipalign
+	"
+	for Y90 in $BIN9; do
+	if [ $(command -v $Y90) ]; then
+		local full_is=true
+	else
+		local full_is=false
+	fi
+	done
+	
+	if $full_is; then
+	return 0
+	else
+	print "! Untuk Mengunakan Fitur ini anda harus menginstall versi penuh"
+	return 1
+	fi
+	}
+	
 boost(){
 print "- Boost...";
 print " ";
@@ -250,7 +315,7 @@ device(){
     
     [ "$(grep f2fs /vendor/etc/fstab.qcom)" ] && print "F2FS = This ROM supports F2FS" || print "${WHITE}F2FS = This ROM not supports F2FS${GREEN}"
     test -f /sys/kernel/touchpanel/dclicknode && [ "$(cat /sys/kernel/touchpanel/dclicknode)" -eq 1 ] && print "DT2W = Enable" || print "${WHITE}DT2W = Disable${GREEN}"
-    [ -L /dev/block/by-name/super ] && print "Dynamic Partitions = true" || "Dynamic Partitions = false"
+    [ -L /dev/block/by-name/super ] && print "Dynamic Partitions = true" || print "Dynamic Partitions = false"
     if pm list packages -s | grep -q com.google.android.gms; then
     print "Gapps=installed"
     else
@@ -764,43 +829,26 @@ addon_ccg(){
 	done
 	end_menu
 	}
-addon(){
-	while true; do
-	print_title "Add-on"
-	print "1. Fake Battery Set"
-	print "2. Led Calerful"
-	print "3. Disable Led"
-	print "4. Boot Unpacker"
-	print "5. Set all permissions apk installed"
-	print "6. Enable All Apps"
-	print "7. Clean Cache Game"
-	print "8. Exit"
-	print " "
-	echo -n "Select Menu : "
-	read addons
-	case $addons in
-	1)
-		print
-		echo -n "Fake Batttery Number : "
-		read fake
-		echo $fake > /sys/class/power_supply/battery/capacity 
-	;;
-	2)addon_led_calerful
-	;;
-	3)
-		print
-		print "- Disabling Leds"
-		echo 0 > /sys/class/leds/red/brightness
-		echo 0 > /sys/class/leds/green/brightness
-		print "- Done"
-		sleep 2s
-	;;
-	4) addon_boot_unpacker
-	;;
-	5)
-		print_title "Set All Permissions APK Installed"
+addon_fake_battery(){
+	
+	print
+	echo -n "Fake Batttery Number : "
+	read fake
+	echo $fake > /sys/class/power_supply/battery/capacity 
+	
+	}
+addon_disable_led(){
+	print
+	print "- Disabling Leds"
+	echo 0 > /sys/class/leds/red/brightness
+	echo 0 > /sys/class/leds/green/brightness
+	print "- Done"
+	sleep 2s
+	}
+addon_set_all_permissions(){
+	print_title "Set All Permissions APK Installed"
 		for b in $(pm list packages -3); do
-			package=`getp1 $b`
+			local package=`getp1 $b`
 			print "${GREEN}- Set permissions : ${CYAN}$package"
 			pm grant $package android.permission.READ_CALENDAR 2>/dev/null
 			pm grant $package android.permission.READ_CALL_LOG  2>/dev/null
@@ -821,13 +869,152 @@ addon(){
 			pm grant $package android.permission.READ_CONTACTS 2>/dev/null
 		done
 		end_menu
-	;;
-	6) addon_enable_all_apps
-	;;
-	7)
-	addon_ccg
-	;;
-	8) break ;;
+	
+	}
+addon_change_device_prop(){
+	print_title "Change Device Prop"
+	del $CACHE/list_prop
+	cdir $CACHE/list_prop
+	local NUM=0
+	for T97 in $(find $FILES/prop -type f -name config); do
+	local NUM=$(((NUM+1)))
+	local basedir=`dirname $T97`
+		for T98 in $(find $basedir -type f -name build.prop); do
+			cat $T98 >> $CACHE/list_prop/$NUM
+		done
+	
+	done
+	
+	for HH7 in $(ls -1 $CACHE/list_prop); do
+		local DEVICE_MODEL_PROP=`GETPROP ro.product.vendor.model $CACHE/list_prop/$HH7`
+		print "${HH7}. $DEVICE_MODEL_PROP"
+	done
+	echo
+	echo -n " Select Props 1 - $NUM : "
+	read READ78
+	if [ -f $CACHE/list_prop/$READ78 ]; then
+		local NAME_F=$CACHE/list_prop/$READ78
+		local DIRM=/data/adb/modules/${NAME}_prop
+		if [ -f $NAME_F ]; then
+		del $DIRM
+		cdir $DIRM
+		local BRAND=`GETPROP ro.product.vendor.brand $NAME_F`
+		local MANUFACTUR=`GETPROP ro.product.vendor.manufacturer $NAME_F`
+		local MARKETNAME=`GETPROP ro.product.vendor.model $NAME_F`
+		local MODEL=`GETPROP ro.product.vendor.model $NAME_F`
+		local CODENAME=`GETPROP ro.product.vendor.device $NAME_F`
+		local FINGERPRINT=`GETPROP ro.vendor.build.fingerprint $NAME_F`
+		print
+		print
+		print
+		print "  ${Y}Change device profile${G}"
+		print 
+		print " Brand = ${WHITE}$BRAND${G}"
+		print " Manufacture = ${WHITE}$MANUFACTUR${G}"
+		print " Marketname = ${WHITE}$MARKETNAME${G}"
+		print " Model = ${WHITE}$MODEL${G}"
+		print " Codename = ${WHITE}$CODENAME${G}"
+		print " Fingerprint = ${WHITE}$FINGERPRINT${G}"
+		print
+		print "- Make module"
+		local MPROPS=$DIRM/module.prop
+		echo "id=${NAME}_prop" >> $MPROPS
+		echo "name=${NAME} Prop $MODEL" >> $MPROPS
+		echo "version=$propversion" >> $MPROPS
+		echo "versionCode=$propcode" >> $MPROPS
+		echo "author=${NAME}" >> $MPROPS
+		echo "description=$NAME Controller props" >> $MPROPS
+		print "- Dump props"
+		local PROPS=$DIRM/system.prop
+		echo "ro.product.brand=$BRAND" >> $PROPS
+		echo "ro.product.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.model=$MODEL" >> $PROPS
+		echo "ro.build.fingerprint=$FINGERPRINT" >> $PROPS
+		echo "ro.build.product=$CODENAME" >> $PROPS
+		echo "ro.product.device=$CODENAME" >> $PROPS
+		
+		#vendor partition prop Android 8.0+
+		if [ $API -gt 26 ]; then
+		#vendor
+		echo "ro.product.vendor.brand=$BRAND" >> $PROPS
+		echo "ro.product.vendor.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.vendor.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.vendor.model=$MODEL" >> $PROPS
+		echo "ro.vendor.build.fingerprint=$FINGERPRINT" >> $PROPS
+		fi
+		#system and product partition prop Android 10+
+		if [ $API -gt 28 ]; then
+		#product
+		echo "ro.product.product.brand=$BRAND" >> $PROPS
+		echo "ro.product.product.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.product.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.product.model=$MODEL" >> $PROPS
+		echo "ro.product.build.fingerprint=$FINGERPRINT" >> $PROPS
+		#system
+		echo "ro.product.system.brand=$BRAND" >> $PROPS
+		echo "ro.product.system.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.system.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.system.model=$MODEL" >> $PROPS
+		echo "ro.product.system.device=$CODENAME" >> $PROPS
+		echo "ro.system.build.fingerprint=$FINGERPRINT" >> $PROPS
+		#vendor
+		echo "ro.product.vendor.device=$CODENAME" >> $PROPS
+		#odm
+		echo "ro.product.odm.device=$CODENAME" >> $PROPS
+		fi
+
+		#system_ext and odm partition prop Android 11+
+		if [ $API -gt 29 ]; then
+		#system_ext
+		echo "ro.product.system_ext.brand=$BRAND" >> $PROPS
+		echo "ro.product.system_ext.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.system_ext.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.system_ext.model=$MODEL" >> $PROPS
+		echo "ro.system_ext.build.fingerprint=$FINGERPRINT" >> $PROPS
+		#odm
+		echo "ro.product.odm.brand=$BRAND" >> $PROPS
+		echo "ro.product.odm.manufacturer=$MANUFACTUR" >> $PROPS
+		echo "ro.product.odm.marketname=$MARKETNAME" >> $PROPS
+		echo "ro.product.odm.model=$MODEL" >> $PROPS
+		echo "ro.odm.build.fingerprint=$FINGERPRINT" >> $PROPS
+		fi
+		print 
+		print "${Y}+ Note${G}"
+		print "To restore original device prop, you can delete it from magisk or delete directory ${WHITE}<${DIRM}>${G}"
+	
+		else
+			error "! Device fingerprint <$FINGERPRINT_D/$NAME> not found"
+		fi
+	fi
+	
+	end_menu
+	}
+addon(){
+	while true; do
+	print_title "Add-on"
+	print "1. Fake Battery Set"
+	print "2. Led Calerful"
+	print "3. Disable Led"
+	print "4. Boot Unpacker"
+	print "5. Set all permissions apk installed"
+	print "6. Enable All Apps"
+	print "7. Clean Cache Game"
+	print "8. Change Device Prop"
+	print "9. Exit"
+	print " "
+	echo -n "Select Menu : "
+	read addons
+	case $addons in
+	1)addon_fake_battery ;;
+	2)addon_led_calerful ;;
+	3)addon_disable_led ;;
+	4)addon_boot_unpacker ;;
+	5)addon_set_all_permissions ;;
+	6)addon_enable_all_apps ;;
+	7)addon_ccg;;
+	8)addon_change_device_prop ;;
+	9) break ;;
 	*)
 		error "Invalid selection"; sleep 2s ;;
 	esac
@@ -1025,6 +1212,40 @@ TWEAKS(){
 		esac
 	done
 	}
+GAPPS(){
+	while true; do
+	clear
+	printmid "${C}Litegapps Tweaks${G}"
+	print
+	print " 1. Fix Notification Delay" 
+	print " 2. Back"
+	print
+	echo -n "  Select Menu : "
+	read perm33
+	case $perm33 in
+		1)
+			clear
+			printmid "Fix Notification Delay"
+			print
+			local NUM=$NUM
+			for GF in $(find /data/data -type f -name *gms*); do
+			local NUM=$(((NUM+1)))
+			print "${NUM}. Removing ${WHITE}${GF}${G}"
+			done
+			menu_end
+		;;
+		2)
+		break
+			;;
+		*)
+			error "please select menu"
+			sleep 2s
+			;;
+	esac
+	
+   done
+}
+
 SETTINGS(){
 	while true; do
 		print_title "Settings"
@@ -1074,22 +1295,20 @@ SETTINGS(){
 		esac
 	done
 	}
+mode(){
+	if [ ! -f $DATA/mode ] || [ $(cat $DATA/mode) = normal ]; then
+	echo performance > $DATA/mode
+	elif [ -f $DATA/mode ] && [ $(cat $DATA/mode) = performance ]; then
+	echo powersave > $DATA/mode
+	else
+	echo normal > $DATA/mode
+	
+	fi
+	REBOOT
+	}
 about(){
-print "$CYAN "
-print "Litegapps Controller $propversion ($propdate)"
-print "Copyright (C) 2019 wahyu kurniawan (wahyu6070)."
-print "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>."
-print "This is free software: you are free to change and redistribute it."
-print "There is NO WARRANTY, to the extent permitted by law."
-print "${YELLOW}"
-print " Github   : https://github.com/litegapps/litegapps-controller"
-print " Telegram : https://t.me/litegapps"
-print " Youtube  : https://youtube.com/c/wahyu6070"
-print " Website  : https://litegapps.github.io"
-print " Paypal   : https://paypal.me/wahyu6070"
-print " $GREEN"
+OPEN_LINK $ABOUT_LINK
 }
-
 menu(){
 	while true; do
 	print_title "$2"
@@ -1129,14 +1348,28 @@ done
 while true; do
 clear
 test -f $DATA/battery_saver && batterystatus="${VIOLET}3.Disable Battery... ${NC}${GREEN}" || batterystatus="3.Battery Saver      "
+if [ -f $DATA/mode ] && [ $(cat $DATA/mode) = normal ]; then
+MODE=normal
+elif [ -f $DATA/mode ] && [ $(cat $DATA/mode) = performance ]; then
+MODE=performance
+elif [ -f $DATA/mode ] && [ $(cat $DATA/mode) = powersave ]; then
+MODE=powersave
+else
+MODE=normal
+fi
 print " "
-print "                   ${YELLOW}LiteGapps ${WHITE}Controller${GREEN}"
+print "                   ${YELLOW}${NAME} ${WHITE}Controller${GREEN}"
+print " "
+print " Mode = $MODE"
+if [ -f $DATA/reboot ]; then
+print " Reboot Diperlukan"
+fi
 print " "
 print " "
-print "1.Boost              5.Litegapps Menu      ${YELLOW}9.Tweaks${GREEN}"
+print "1.Boost              5.Gapps               ${YELLOW}9.Tweaks${GREEN}"
 print "2.Gaming Mode        6.Memory Info         10.Settings"
 print "${batterystatus}7.Device Info         11.About"
-print "4.Check Ping         8.Add-on              12.Exit"
+print "4.Change Mode        8.Add-on              12.Exit"
 print
 echo -n "${YELLOW}Choose one of the numbers : ${CYAN}"
 read pilih
@@ -1144,21 +1377,15 @@ case $pilih in
 1) menu boost Boost ;;
 2) gaming ;;
 3) menu battery "Battery Saver" ;;
-4) menu testping "Test Ping" ;;
-5)
-	if [ -f /data/adb/litegapps_controller/litegapps_menu.sh ]; then
-		. /data/adb/litegapps_controller/litegapps_menu.sh
-	else
-		error "Please Install Litegapps Controller full version !"
-		sleep 5s
-	fi
+4) mode;;
+5)GAPPS
 ;;
 6) menu meminfo "Memory Info" ;;
 7) menu device "Device info" ;;
 8) addon ;;
 9) TWEAKS ;;
 10) SETTINGS ;;
-11 | about) menu about About ;;
+11 | about) OPEN_LINK $ABOUT_LINK;;
 12 | exit | e)  
 print " $WHITE "
 break 
@@ -1166,3 +1393,4 @@ break
 *) error "Invalid selection" ; sleep 2s ;;
 esac
 done
+
