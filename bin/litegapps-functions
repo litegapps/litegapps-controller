@@ -143,9 +143,10 @@ get_android_codename(){
 		29) echo "Quince Tart" ;;
 		30) echo "Red Velvet Cake" ;;
 		31) echo "Snow Cone" ;;
-		32) echo "Snow Cone" ;;
+		32) echo "Snow Cone V2" ;;
 		33) echo "Tiramisu" ;;
 		34) echo "Upside Down Cake" ;;
+		35) echo "Vanilla Ice Cream" ;;
 		*) echo "null" ;;
 	 esac
 	}
@@ -302,6 +303,7 @@ get_android_version(){
 		32) echo 12.1 ;;
 		33) echo 13.0 ;;
 		34) echo 14.0 ;;
+		35) echo 15.0 ;;
 		*) echo null ;;
 	 esac
 	}
@@ -343,44 +345,6 @@ litegappsx(){
 	fi
 	
 	
-	}
-	
-	
-app_true(){
-	
-	pm list packages | grep -q $1
-	if [ $? -eq "0" ]; then
-	return 0
-	else
-	return 1
-	fi
-	
-	}
-ADS_START(){
-	local ads_link=$1
-	
-	if $(app_true com.android.chrome); then
-	am start -n com.android.chrome/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d $ads_link >> $log
-	elif $(app_true com.chrome.canary); then
-	am start -n com.chrome.canary/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d $ads_link >> $log
-	elif $(app_true com.chrome.beta); then
-	am start -n com.chrome.beta/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d $ads_link >> $log
-	elif $(app_true com.chrome.dev); then
-	am start -n com.chrome.dev/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d $ads_link >> $log
-	else
-	am start -a android.intent.action.VIEW -d $ads_link >> $log
-	fi
-	}
-	
-	
-ADS(){
-	if [ $BOOTMODE = true ] && [ ! -f /sdcard/wahyu6070 ]; then
-	printlog "- Opening Ads"
-	ADS_START $1
-	sleep 15s
-	else
-	sedlog "- Ads is not running"
-	fi
 	}
 	
 INITIAL(){

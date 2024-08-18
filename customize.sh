@@ -21,8 +21,6 @@ print "- installing binary"
 test ! -d $BIN && mkdir -p $BIN
 cp -af $MODPATH/bin/$ARCH/* $BASE/bin/
 
-ADS https://lovinghosethus.com/c2pv7f14tk?key=d8f2cbfe01d5df5e72b2c36ce505a08f
-
 #curl
 print "- installing curl"
 if [ -d /dev/block/mapper ]; then
@@ -86,9 +84,6 @@ print "- Clean cache"
 for F in $LIST_TMP; do
 	rm -rf $F
 done
-
-
-ADS https://lovinghosethus.com/c2pv7f14tk?key=d8f2cbfe01d5df5e72b2c36ce505a08f
 
 
 print
