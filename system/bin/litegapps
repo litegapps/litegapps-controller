@@ -9,7 +9,7 @@ NAME=LiteGapps
 ABOUT_LINK=https://litegapps.github.io/doc/litegapps_controller.html
 propversion=v1.2
 propcode=12
-propdate=01-08-2024
+propdate=19-08-2024
 
 # Colors
 GREEN='\e[01;32m'

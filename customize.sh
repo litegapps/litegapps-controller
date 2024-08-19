@@ -3,6 +3,7 @@
 
 SDKTARGET=$API
 BASE=/data/adb/litegapps_controller
+SBASE=/data/media/0/Android/litegapps
 BIN=$BASE/bin
 chmod 755 $MODPATH/bin/litegapps-functions
 #litegapps functions
@@ -15,14 +16,18 @@ INITIAL install
 
 [ -d $BASE ] && rm -rf $BASE && mkdir -p $BASE || mkdir -p $BASE
 print "- Installing files"
-cp -af $MODPATH/script/* $BASE/
 
-print "- installing binary"
+print "- Installing Props"
+del $SBASE/files
+cdir $SBASE/files
+cp -af $MODPATH/script/* $SBASE/files/
+
+print "- Installing binary"
 test ! -d $BIN && mkdir -p $BIN
 cp -af $MODPATH/bin/$ARCH/* $BASE/bin/
 
 #curl
-print "- installing curl"
+print "- Installing curl"
 if [ -d /dev/block/mapper ]; then
 	cp -af $MODPATH/curl/dynamic/$ARCH/* $BASE/bin/
 else
@@ -92,6 +97,6 @@ print
 print "- Open Terminal"
 print
 print "- su"
-print "- litegapps or litegapps2"
+print "- litegapps2"
 print
 print
