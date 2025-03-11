@@ -7,9 +7,9 @@
 #
 NAME=LiteGapps
 ABOUT_LINK=https://litegapps.github.io/doc/litegapps_controller.html
-propversion=v1.2
-propcode=12
-propdate=19-08-2024
+propversion=v1.3
+propcode=13
+propdate=11-03-2025
 
 # Colors
 GREEN='\e[01;32m'
@@ -127,6 +127,40 @@ OPEN_LINK(){
 REBOOT(){
 	touch $DATA/reboot
 	
+	}
+app_check(){
+	local package=$1
+	if pm list packages | grep -q $package; then
+	print "[√] Package Is Installed"
+	local PATH98=`pm list packages -f $package | head -n1 | cut -d : -f 2`
+	print "[√] Path : $PATH98"
+	file "$PATH98"
+	else
+	print "[!] Package is not found"
+	fi
+	
+	
+	} 
+get_android_version(){
+	local input=$1
+	case $input in
+		21) echo 5.0 ;;
+		22) echo 5.1 ;;
+		23) echo 6.0 ;;
+		24) echo 7.0 ;;
+		25) echo 7.1 ;;
+		26) echo 8.0 ;;
+		27) echo 8.1 ;;
+		28) echo 9.0 ;;
+		29) echo 10.0 ;;
+		30) echo 11.0 ;;
+		31) echo 12.0 ;;
+		32) echo 12.1 ;;
+		33) echo 13.0 ;;
+		34) echo 14.0 ;;
+		35) echo 15.0 ;;
+		36) echo 16.0 ;;
+	 esac
 	}
 #▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
 # LIST APPS
@@ -304,22 +338,35 @@ device(){
 	print "Chipset = $(getprop ro.product.board) " |  tee -a $LOG;
 	print "GPU = $(cat /sys/kernel/gpu/gpu_model)"
 	[ "$(command -v busybox)" ] && print "Busybox = Installed" || print "${WHITE}Busybox = Not found $GREEN"
-    if command -v magisk >/dev/null; then
-    	print "Magisk = Installed"
-    	print "Magisk version = $(magisk -v)"
-    	print "Magisk Version code = $(magisk -V)"
-    	print "Magisk path =$(magisk --path)"
+	
+	if command -v magisk >/dev/null 2>&1; then
+    echo "Root By = Magisk"
+    echo "Magisk version = $(magisk -v)"
+    echo "Magisk Version code = $(magisk -V)"
+    echo "Magisk path = $(magisk --path)"
+	elif ksud -h 2>&1 | grep -q "KernelSU Next"; then
+    echo "Root By = KernelSU Next"
+    echo "KSU Next version = $(su -v)"
+	elif command -v ksud >/dev/null 2>&1; then
+    echo "Root By = KernelSU"
+    echo "KernelSU version = $(su -v)"
+	fi
+    if cat /proc/filesystems | grep -q overlay; then
+    	print "OverlayFS=supported"
     else
-    	print "${WHITE}magisk = Not found"
+    	print "${WHITE}OverlayFS=unsuppoted"
     fi
-    
-    [ "$(grep f2fs /vendor/etc/fstab.qcom)" ] && print "F2FS = This ROM supports F2FS" || print "${WHITE}F2FS = This ROM not supports F2FS${GREEN}"
+    if cat /proc/filesystems | grep -q f2fs; then
+    	print "F2FS=supported"
+    else
+    	print "${WHITE}F2FS=unsuppoted"
+    fi
     test -f /sys/kernel/touchpanel/dclicknode && [ "$(cat /sys/kernel/touchpanel/dclicknode)" -eq 1 ] && print "DT2W = Enable" || print "${WHITE}DT2W = Disable${GREEN}"
     [ -L /dev/block/by-name/super ] && print "Dynamic Partitions = true" || print "Dynamic Partitions = false"
     if pm list packages -s | grep -q com.google.android.gms; then
-    print "Gapps=installed"
+    	print "Gapps=installed"
     else
-    print "${WHITE}Gapps=not found"
+    	print "${WHITE}Gapps=not found"
     fi
     print "Web View = $(settings get global webview_provider)"
     if [ "$(settings get secure flashlight_available)" -eq 1 ]; then
@@ -1175,6 +1222,32 @@ TWEAKS_DISABLE_GAPPS(){
 	print "- Done"
 	end_menu
 	}
+TWEAKS_DT2W(){
+	clear 
+	printmid "Double Tab To Wake Lock"
+	print " "
+	if settings list system | grep -q double_tap_sleep_lockscreen; then
+    		value=$(settings get system double_tap_sleep_lockscreen)
+
+    		case "$value" in
+        		1)
+           		 echo "- Disabling DT2W"
+           		 settings put system double_tap_sleep_lockscreen 0
+            	;;
+       		 0)
+           		 echo "5. Enabling DT2W"
+           		 settings put system double_tap_sleep_lockscreen 1
+            	;;
+        		*)
+            		echo "${RED}[ERROR]${NC} Invalid DT2W setting value: '$value'"
+            	;;
+    		esac
+		else
+    		echo "${RED}[ERROR]${NC} DT2W is not supported"
+		
+	fi
+	end_menu
+	}
 TWEAKS(){
 	while true; do
 		print_title "Tweaks"
@@ -1190,7 +1263,25 @@ TWEAKS(){
 		else
 		print "${VIOLET}4. Disable Gapps${GREEN}"
 		fi
-		print "5. Exit"
+		
+		if settings list system | grep -q double_tap_sleep_lockscreen; then
+    		value=$(settings get system double_tap_sleep_lockscreen)
+
+    		case "$value" in
+        		1)
+           		 echo "${VIOLET}5. Disabling DT2W${GREEN}"
+            	;;
+       		 0)
+           		 echo "5. Enabling DT2W"
+            	;;
+        		*)
+            		echo "5. "
+            	;;
+    		esac
+		else
+    		echo "${RED}[ERROR]${NC} DT2W is not supported"
+		fi
+		print "6. Exit"
 		SELECT
 		case $PILIH in
 		1)
@@ -1205,38 +1296,182 @@ TWEAKS(){
 		4)
 		TWEAKS_DISABLE_GAPPS
 		;;
-		5 | exit)
+		5)
+		TWEAKS_DT2W
+		;;
+		6 | exit)
 		break
 		;;
 		*) error "Invalid selection" ; sleep 2s ;;
 		esac
 	done
 	}
+GAPPS_CHECK(){
+	clear
+	printmid "${CYAN}LiteGapps Check Installation${GREEN}"
+	print " "
+	print "- Checking if gapps has been installed correctly"
+print "--------------------"
+print "- Checking Google Play Services"
+for s1 in /system/priv-app /system/product /system/system_ext; do
+	if [ -f $s1/priv-app/GmsCore/GmsCore.apk ]; then
+		app1=$s1/priv-app/GmsCore/GmsCore.apk
+		break
+	fi
+done
+package=com.google.android.gms
+
+if pm list packages | grep -q $package && [ -f $app1 ]; then
+PATH98=$app1
+PATHDATA=`pm list packages -f $package | head -n1 | sed 's/package://g' | sed "s/=$package//g"`
+print "[√] Package Is Installed"
+
+FILE=$PATH98
+
+PERMISSIONS=$(stat -c "%a" "$FILE")
+
+if [ "$PERMISSIONS" -eq 644 ]; then
+    echo "[√] Permissions file"
+else
+    echo "[X] Permissions is not 644, permissions file: $PERMISSIONS"
+fi
+
+if ls -Z $PATH98 | grep -q u:object_r:system_file:s0 ; then
+	echo "[√] Permissions selinux"
+else
+	echo "[X] Permissions selinux"
+fi
+print "[√] Path system : $PATH98"
+print "[√] Path app : $PATHDATA"
+version=`pm dump $package | grep versionName | head -n1 | cut -d = -f 2`
+print "[√] Version app : $version"
+minsdk=`pm dump $package | grep minSdk | head -n1 | awk -F'minSdk=' '{print $2}' | awk '{print $1}'`
+print "[√] Min Support : Android $(get_android_version $minsdk)"
+maxsdk=`pm dump $package | grep targetSdk | head -n1 | awk -F'targetSdk=' '{print $2}' | awk '{print $1}'`
+print "[√] Max Support : Android $(get_android_version $maxsdk)"
+
+else
+print "[!] Google Play Services Package is not found"
+fi
+
+print "--------------------"
+print "- Checking Google Store"
+
+for s1 in /system/priv-app /system/product /system/system_ext; do
+	if [ -f $s1/priv-app/Phonesky/Phonesky.apk ]; then
+		app1=$s1/priv-app/Phonesky/Phonesky.apk
+		break
+	fi
+done
+package=com.android.vending
+
+if pm list packages | grep -q $package && [ -f $app1 ]; then
+PATH98=$app1
+PATHDATA=`pm list packages -f $package | head -n1 | sed 's/package://g' | sed "s/=$package//g"`
+print "[√] Package Is Installed"
+
+FILE=$PATH98
+
+PERMISSIONS=$(stat -c "%a" "$FILE")
+
+if [ "$PERMISSIONS" -eq 644 ]; then
+    echo "[√] Permissions file"
+else
+    echo "[X] Permissions is not 644, permissions file: $PERMISSIONS"
+fi
+
+if ls -Z $PATH98 | grep -q u:object_r:system_file:s0 ; then
+	echo "[√] Permissions selinux"
+else
+	echo "[X] Permissions selinux"
+fi
+print "[√] Path system : $PATH98"
+print "[√] Path app : $PATHDATA"
+version=`pm dump $package | grep versionName | head -n1 | cut -d = -f 2`
+print "[√] Version app : $version"
+minsdk=`pm dump $package | grep minSdk | head -n1 | awk -F'minSdk=' '{print $2}' | awk '{print $1}'`
+print "[√] Min Support : Android $(get_android_version $minsdk)"
+maxsdk=`pm dump $package | grep targetSdk | head -n1 | awk -F'targetSdk=' '{print $2}' | awk '{print $1}'`
+print "[√] Max Support : Android $(get_android_version $maxsdk)"
+
+else
+print "[!] Google Play Store Package is not found"
+fi
+
+print "--------------------"
+print "- Checking Google Services Framework"
+
+for s1 in /system/priv-app /system/product /system/system_ext; do
+	if [ -f $s1/priv-app/GoogleServicesFramework/GoogleServicesFramework.apk ]; then
+		app1=$s1/priv-app/GoogleServicesFramework/GoogleServicesFramework.apk
+		break
+	fi
+done
+package=com.google.android.gsf
+
+if pm list packages | grep -q $package && [ -f $app1 ]; then
+PATH98=$app1
+PATHDATA=`pm list packages -f $package | head -n1 | sed 's/package://g' | sed "s/=$package//g"`
+print "[√] Package Is Installed"
+
+FILE=$PATH98
+
+PERMISSIONS=$(stat -c "%a" "$FILE")
+
+if [ "$PERMISSIONS" -eq 644 ]; then
+    echo "[√] Permissions file"
+else
+    echo "[X] Permissions is not 644, permissions file: $PERMISSIONS"
+fi
+
+if ls -Z $PATH98 | grep -q u:object_r:system_file:s0 ; then
+	echo "[√] Permissions selinux"
+else
+	echo "[X] Permissions selinux"
+fi
+print "[√] Path system : $PATH98"
+print "[√] Path app : $PATHDATA"
+version=`pm dump $package | grep versionName | head -n1 | cut -d = -f 2`
+print "[√] Version app : $version"
+minsdk=`pm dump $package | grep minSdk | head -n1 | awk -F'minSdk=' '{print $2}' | awk '{print $1}'`
+print "[√] Min Support : Android $(get_android_version $minsdk)"
+maxsdk=`pm dump $package | grep targetSdk | head -n1 | awk -F'targetSdk=' '{print $2}' | awk '{print $1}'`
+print "[√] Max Support : Android $(get_android_version $maxsdk)"
+
+else
+print "[!] Google Services Framework Package is not found"
+fi
+
+	print "--------------------"
+	print "- Done"
+	end_menu
+	}
+GAPPS_FIX_DELAY(){
+	clear
+	printmid "Fix Notification Delay"
+	print
+	local NUM=$NUM
+	for GF in $(find /data/data -type f -name *gms*); do
+		local NUM=$(((NUM+1)))
+		print "${NUM}. Removing ${WHITE}${GF}${G}"
+	done
+	end_menu
+	}
 GAPPS(){
 	while true; do
 	clear
-	printmid "${C}Litegapps Tweaks${G}"
+	printmid "${CYAN}Litegapps Tweaks${GREEN}"
 	print
 	print " 1. Fix Notification Delay" 
-	print " 2. Back"
+	print " 2. Gapps Check Installation"
+	print " 3. Back"
 	print
 	echo -n "  Select Menu : "
 	read perm33
 	case $perm33 in
-		1)
-			clear
-			printmid "Fix Notification Delay"
-			print
-			local NUM=$NUM
-			for GF in $(find /data/data -type f -name *gms*); do
-			local NUM=$(((NUM+1)))
-			print "${NUM}. Removing ${WHITE}${GF}${G}"
-			done
-			menu_end
-		;;
-		2)
-		break
-			;;
+		1) GAPPS_FIX_DELAY;;
+		2) GAPPS_CHECK;;
+		3) break ;;
 		*)
 			error "please select menu"
 			sleep 2s
@@ -1362,7 +1597,7 @@ print "                   ${YELLOW}${NAME} ${WHITE}Controller${GREEN}"
 print " "
 print " Mode = $MODE"
 if [ -f $DATA/reboot ]; then
-print " Reboot Diperlukan"
+	print " Reboot Required"
 fi
 print " "
 print " "

@@ -64,6 +64,11 @@ print "- Magiskboot detected"
 print "- Installing magiskboot"
 cp -pf /data/adb/magisk/magiskboot $MODPATH/system/bin/magiskboot
 chmod 755 $MODPATH/system/bin/magiskboot
+elif [ -f /data/adb/ksu/bin/magiskboot ]; then
+print "- Magiskboot detected (by ksu bin)"
+print "- Installing magiskboot"
+cp -pf /data/adb/ksu/bin/magiskboot $MODPATH/system/bin/magiskboot
+chmod 755 $MODPATH/system/bin/magiskboot
 fi
 
 if [ -d /data/data/com.termux/files/usr/bin ]; then
