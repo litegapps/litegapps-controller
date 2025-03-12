@@ -1,12 +1,12 @@
 id=litegapps-controller
 name=LiteGapps Controller
-version=v1.2
-versionCode=12
+version=v1.3
+versionCode=13
 minsdk=25
-date=19-08-2024
+date=11-03-2025
 device=All
-author=wahyu6070
+author=wahyu6070, 601t
 description=Litegapps Controller is additional features of litegapps and litegapps++
 typeinstall=auto
-updateJson=https://raw.githubusercontent.com/litegapps/litegapps-controller/main/update.json
+updateJson=https://raw.githubusercontent.com/601t/litegapps-controller/refs/heads/main/update.json
 support=https://litegapps.github.io
