@@ -1,6 +1,6 @@
 {
   "version": "v1.3",
   "versionCode": "13",
-  "zipUrl": "https://github.com/601t/litegapps-controller/releases/download/1.3/litegapps-controller-v1.3.zip",
+  "zipUrl": "https://github.com/litegapps/litegapps-controller/releases/download/stable/litegapps-controller-v1.3.zip",
   "changelog": "https://raw.githubusercontent.com/litegapps/litegapps-controller/main/changelog.md"
 }
