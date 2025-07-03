@@ -1,9 +1,9 @@
 id=litegapps-controller
 name=LiteGapps Controller
-version=v1.2
-versionCode=12
+version=v1.3
+versionCode=13
 minsdk=25
-date=19-08-2024
+date=11-03-2025
 device=All
 author=wahyu6070
 description=Litegapps Controller is additional features of litegapps and litegapps++
